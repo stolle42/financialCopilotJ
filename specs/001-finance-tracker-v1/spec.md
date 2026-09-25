@@ -24,6 +24,15 @@ source for what v1 contains. Nothing here is optional; nothing not here is in v1
 - Q: When a bank file has no counterparty column, how does review decide two rows share a vendor?
   → A: By the description truncated at its first digit, punctuation removed, whitespace collapsed,
   ignoring case; if that leaves nothing, by the whole description normalised the same way.
+- Q: Can an expense or income be saved without a category? → A: No, and the UI never offers that
+  state: the category holds the side's "Uncategorised" until the user picks another.
+- Q: Can a transfer be given a category? → A: No; when the kind is transfer, the form shows a
+  destination account in place of the category.
+- Q: What does the manual-entry form hold when opened, and can it be saved as is? → A: Kind
+  expense, date today, amount 0.00, account "Cash", category expense "Uncategorised", description
+  empty. Saving unchanged books a 0.00 expense with no description to "Cash". Description is
+  optional; a zero amount is allowed.
+- Q: How is an opening balance changed? → A: Only after a severe warning that the user confirms.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -46,27 +55,31 @@ both balances equal opening balance plus the net of their transactions. Delivers
 1. **Given** a fresh install, **When** the user opens the account list, **Then** it contains exactly
    one account, the predefined "Cash", with balance 0.00.
 2. **Given** only the predefined "Cash" account, **When** the user creates account "Checking" of
-   type checking with opening balance 1,250.00 as of 2026-09-01, **Then** the account list shows
-   "Checking" with balance 1,250.00.
+   type checking with opening balance 1,250.00, **Then** the account list shows "Checking" with
+   balance 1,250.00.
 3. **Given** "Checking" with balance 1,250.00, **When** the user records an expense of 40.00 dated
    2026-09-03, description "Weekly shop", category "Groceries", **Then** "Checking" shows 1,210.00.
 4. **Given** "Checking" (1,210.00) and "Cash" (0.00), **When** the user records a transfer of 100.00
    from "Checking" to "Cash", **Then** "Checking" shows 1,110.00, "Cash" shows 100.00, and total
    spending and total income are unchanged.
 5. **Given** the user is recording an expense, **When** the category picker opens, **Then** it offers
-   expense categories only, and exactly one entry named "Uncategorised".
-6. **Given** the user tries to save an expense with no category, **Then** the app refuses and names
-   the missing field; the same holds for an income with no category.
-7. **Given** the user tries to save a transfer with a category, or with the same account on both
-   sides, **Then** the app refuses.
-8. **Given** the predefined "Cash" account exists, **When** the user opens manual entry, **Then** the
-   date is today and the account is "Cash", so a complete expense needs only amount, description,
-   and category.
+   expense categories only, and exactly one entry named "Uncategorised", and exactly one category named "Unaccounted".
+6. **Given** the user is recording an expense or an income, **When** they look for a way to leave
+   the category empty, **Then** none exists: the category holds the side's "Uncategorised" until
+   they pick another.
+7. **Given** the user sets the kind to transfer, **Then** the form offers a destination account in
+   place of the category, and the destination picker does not offer the source account.
+8. **Given** the predefined "Cash" account still exists, **When** the user opens manual entry,
+   **Then** the kind is expense, the date is today, the amount is 0.00, the account is "Cash", the
+   category is expense "Uncategorised", and the description is empty; **When** the user saves
+   without changing anything, **Then** an expense of 0.00 with no description is booked to "Cash"
+   in "Uncategorised".
 9. **Given** the user's last manual entry was recorded to "Checking", **When** they open manual
    entry again, **Then** the account is still "Cash".
-10. **Given** "Checking" has an opening balance of 1,250.00 as of 2026-09-01, **When** the user
-    changes the opening balance to 1,300.00, **Then** the computed balance rises by 50.00 and no
-    transaction is created.
+10. **Given** "Checking" has an opening balance of 1,250.00, **When** the user changes the opening
+    balance to 1,300.00, **Then** the app shows a severe warning that every
+    balance this account has ever shown will change and asks for confirmation; **When** the user
+    confirms, **Then** the computed balance rises by 50.00 and no transaction is created.
 11. **Given** any account, **When** the user looks for a way to type in a balance directly, **Then**
     none exists; the only ways to change a balance are transactions, the opening balance, and
     reconciliation (User Story 5).
@@ -239,9 +252,9 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 
 ### Edge Cases
 
-- A transaction dated before its account's opening date is refused, with the explanation that the
-  opening date must be moved earlier if the transaction is genuine. In import review, such rows are
-  flagged and cannot be confirmed until the opening date is changed or the row is excluded.
+- The user imports history older than the transactions the opening balance was set against: the
+  balance double-counts those rows until the user lowers the opening balance to match. The app
+  cannot detect this, which is why changing the opening balance is warned about, not blocked.
 - A transfer's other leg appears when the counter-account's export is imported later. A pending row
   whose account is the counter-account of an existing transfer, with the same date and amount, is
   flagged as a duplicate like any other.
@@ -254,12 +267,11 @@ attempt to delete a protected one, and verify transactions and budgets respond a
   and no batch is created.
 - The Insights period spans more than one calendar month: budget progress is shown for the most
   recent calendar month in the period only, labelled with that month.
-- A transaction's kind is changed between expense and income: the category is cleared and must be
-  chosen again from the other side. A transaction changed to or from a transfer likewise loses its
-  category or counter-account.
+- A transaction's kind is changed after it was saved: the category or destination account follows
+  the same rule as during entry (FR-015); nothing is left empty.
 - A transaction is moved to a different account: both accounts' balances update.
-- A transaction with an amount of zero, or a negative amount, is refused; the kind carries the
-  direction.
+- The amount field does not accept a negative value; the kind carries the direction. A zero amount
+  is allowed (FR-010).
 - Two accounts, two mapping profiles, or two categories on the same side with the same name are
   refused.
 - A very large expense "Unaccounted" share appears in Insights: it is shown at its true size; there
@@ -274,10 +286,11 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 **Accounts**
 
 - **FR-001**: Users MUST be able to create and edit an account with a name, a type, and an opening
-  balance as of an opening date.
+  balance: what the account held before its earliest recorded transaction. Changing the opening
+  balance MUST require the user to confirm a severe warning that every computed balance of the
+  account will change.
 - **FR-002**: System MUST compute each account's balance as its opening balance plus the net effect
   of its transactions. There MUST be no way to set a balance directly.
-- **FR-003**: System MUST refuse any transaction dated before its account's opening date.
 - **FR-004**: System MUST give no account type special behaviour; the type is descriptive only, and
   a cash account is an ordinary account.
 - **FR-005**: Users MUST be able to reconcile any account by stating its actual balance. System MUST
@@ -285,25 +298,31 @@ attempt to delete a protected one, and verify transactions and budgets respond a
   expense "Unaccounted" when the stated balance is lower than the computed one, an income in income
   "Unaccounted" when it is higher, and no transaction when they are equal.
 - **FR-006**: On first launch, system MUST create one account named "Cash", of type cash, with an
-  opening balance of 0.00 as of that day. It is an ordinary account (FR-004), editable like any
+  opening balance of 0.00. It is an ordinary account (FR-004), editable like any
   other, and it is the default account for manual entry. Should it not exist, the default is the
   account most recently used for manual entry; since accounts cannot be deleted in v1 (Out of
   Scope), this fallback is not reachable in v1.
 
 **Transactions**
 
-- **FR-010**: Every transaction MUST have a date, an amount greater than zero, an account, a
-  description, and a kind: expense, income, or transfer.
-- **FR-011**: An expense MUST carry exactly one expense category. An income MUST carry exactly one
-  income category. A transfer MUST carry no category and MUST name a second, different account of
-  the user's as its destination.
+- **FR-010**: Every transaction MUST have a date, an amount of zero or more, an account, and a
+  kind: expense, income, or transfer. A description is optional.
+- **FR-011**: An expense MUST carry exactly one expense category and an income exactly one income
+  category; the form MUST never offer a state without one, holding the side's "Uncategorised"
+  until the user picks another. A transfer MUST carry no category and MUST name a second,
+  different account of the user's as its destination; the form MUST offer a destination account in
+  place of the category and MUST NOT offer the source account as destination.
 - **FR-012**: System MUST exclude transfers from every spending figure, income figure, and budget.
 - **FR-013**: Users MUST be able to create, edit, and delete transactions manually.
-- **FR-014**: The manual-entry form MUST pre-fill the date with today and the account with the
-  default account (FR-006), so that recording an expense requires entering only amount,
-  description, and category.
-- **FR-015**: System MUST refuse to save a transaction whose category belongs to the other side, and
-  MUST clear the category when a transaction's kind changes.
+- **FR-014**: The manual-entry form MUST open with kind expense, date today, amount 0.00, account
+  the default account (FR-006), category expense "Uncategorised", and an empty description, and
+  MUST be saveable without any change; recording a typical cash expense means editing only the
+  amount and the category.
+- **FR-015**: A transaction MUST never hold a category from the other side. When the kind changes
+  between expense and income, the category MUST become the new side's "Uncategorised"; when it
+  changes to transfer, the category MUST be removed and a destination account required; when it
+  changes from transfer, the destination MUST be removed and the category MUST become the new
+  side's "Uncategorised".
 
 **CSV import**
 
@@ -383,12 +402,12 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 
 ### Key Entities
 
-- **Account**: Something the user holds money in. Has a name, a descriptive type, an opening balance
-  and opening date, and a computed balance. Cash is an ordinary account; one is predefined and is
+- **Account**: Something the user holds money in. Has a name, a descriptive type, an opening
+  balance, and a computed balance. Cash is an ordinary account; one is predefined and is
   the default for manual entry (FR-006).
-- **Transaction**: One movement of money. Has a date, an amount, a description, a kind (expense,
-  income, transfer), and an account. An expense or income has one category from its side. A
-  transfer has a destination account instead of a category.
+- **Transaction**: One movement of money. Has a date, an amount of zero or more, an optional
+  description, a kind (expense, income, transfer), and an account. An expense or income has one
+  category from its side. A transfer has a destination account instead of a category.
 - **Category**: A label for expenses or incomes. Has a name, a colour, a side (expense or income),
   and whether it is protected. Each side has the protected "Uncategorised" (a to-do) and
   "Unaccounted" (a final answer).
