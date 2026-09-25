@@ -5,8 +5,8 @@
 ### I. Duplication Is Forbidden
 
 Information MUST exist in exactly one markdown file. Any other document that needs it MUST
-link to that original instead of restating it. A task does not restate its requirement; it
-links to the requirement in the spec.
+provide a clickable link to that original instead of restating it. A task does not restate its
+requirement; it links to the requirement in the spec.
 
 Rationale: restated text drifts from its source. One source means one place to change and one
 place to read.
@@ -73,4 +73,4 @@ conflict.
   is not mergeable.
 - Agent runtime guidance lives in [agents.md](../../agents.md) and is subject to Principle I.
 
-**Version**: 1.0.0 | **Ratified**: 2026-09-25 | **Last Amended**: 2026-09-25
+**Version**: 1.0.1 | **Ratified**: 2026-09-25 | **Last Amended**: 2026-09-25

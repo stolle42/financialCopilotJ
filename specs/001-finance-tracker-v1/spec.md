@@ -82,7 +82,7 @@ both balances equal opening balance plus the net of their transactions. Delivers
     confirms, **Then** the computed balance rises by 50.00 and no transaction is created.
 11. **Given** any account, **When** the user looks for a way to type in a balance directly, **Then**
     none exists; the only ways to change a balance are transactions, the opening balance, and
-    reconciliation (User Story 5).
+    reconciliation ([User Story 5](#user-story-5)).
 
 ---
 
@@ -195,6 +195,7 @@ month start.
 
 ---
 
+<a id="user-story-5"></a>
 ### User Story 5 - Reconcile an account to reality (Priority: P5)
 
 The user states what an account actually holds right now. The app books the difference between the
@@ -243,10 +244,10 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 3. **Given** "Restaurants" has 12 transactions and a budget, **When** the user deletes it, **Then**
    the 12 transactions move to expense "Uncategorised" and the budget is removed.
 4. **Given** "Uncategorised" or "Unaccounted" on either side, **When** the user tries to delete it,
-   **Then** the app refuses; renaming and recolouring succeed.
+   **Then** the app refuses and explains why; renaming and recolouring succeed.
 5. **Given** an expense category named "Refunds" exists, **When** the user creates an income
    category named "Refunds", **Then** it succeeds; **When** they create a second expense category
-   named "Refunds", **Then** the app refuses.
+   named "Refunds", **Then** the app refuses and explains why.
 
 ---
 
@@ -268,10 +269,10 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 - The Insights period spans more than one calendar month: budget progress is shown for the most
   recent calendar month in the period only, labelled with that month.
 - A transaction's kind is changed after it was saved: the category or destination account follows
-  the same rule as during entry (FR-015); nothing is left empty.
+  the same rule as during entry ([FR-015](#fr-015)); nothing is left empty.
 - A transaction is moved to a different account: both accounts' balances update.
 - The amount field does not accept a negative value; the kind carries the direction. A zero amount
-  is allowed (FR-010).
+  is allowed ([FR-010](#fr-010)).
 - Two accounts, two mapping profiles, or two categories on the same side with the same name are
   refused.
 - A very large expense "Unaccounted" share appears in Insights: it is shown at its true size; there
@@ -291,21 +292,21 @@ attempt to delete a protected one, and verify transactions and budgets respond a
   account will change.
 - **FR-002**: System MUST compute each account's balance as its opening balance plus the net effect
   of its transactions. There MUST be no way to set a balance directly.
-- **FR-004**: System MUST give no account type special behaviour; the type is descriptive only, and
+- <a id="fr-004"></a>**FR-004**: System MUST give no account type special behaviour; the type is descriptive only, and
   a cash account is an ordinary account.
 - **FR-005**: Users MUST be able to reconcile any account by stating its actual balance. System MUST
   book the difference as a single transaction dated the day of reconciliation: an expense in
   expense "Unaccounted" when the stated balance is lower than the computed one, an income in income
   "Unaccounted" when it is higher, and no transaction when they are equal.
-- **FR-006**: On first launch, system MUST create one account named "Cash", of type cash, with an
-  opening balance of 0.00. It is an ordinary account (FR-004), editable like any
-  other, and it is the default account for manual entry. Should it not exist, the default is the
-  account most recently used for manual entry; since accounts cannot be deleted in v1 (Out of
-  Scope), this fallback is not reachable in v1.
+- <a id="fr-006"></a>**FR-006**: On first launch, system MUST create one account named "Cash", of
+  type cash, with an opening balance of 0.00. It is an ordinary account ([FR-004](#fr-004)),
+  editable like any other, and it is the default account for manual entry. Should it not exist,
+  the default is the account most recently used for manual entry; since accounts cannot be deleted
+  in v1 ([Out of Scope](#out-of-scope)), this fallback is not reachable in v1.
 
 **Transactions**
 
-- **FR-010**: Every transaction MUST have a date, an amount of zero or more, an account, and a
+- <a id="fr-010"></a>**FR-010**: Every transaction MUST have a date, an amount of zero or more, an account, and a
   kind: expense, income, or transfer. A description is optional.
 - **FR-011**: An expense MUST carry exactly one expense category and an income exactly one income
   category; the form MUST never offer a state without one, holding the side's "Uncategorised"
@@ -315,10 +316,10 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 - **FR-012**: System MUST exclude transfers from every spending figure, income figure, and budget.
 - **FR-013**: Users MUST be able to create, edit, and delete transactions manually.
 - **FR-014**: The manual-entry form MUST open with kind expense, date today, amount 0.00, account
-  the default account (FR-006), category expense "Uncategorised", and an empty description, and
-  MUST be saveable without any change; recording a typical cash expense means editing only the
-  amount and the category.
-- **FR-015**: A transaction MUST never hold a category from the other side. When the kind changes
+  the default account ([FR-006](#fr-006)), category expense "Uncategorised", and an empty
+  description, and MUST be saveable without any change; recording a typical cash expense means
+  editing only the amount and the category.
+- <a id="fr-015"></a>**FR-015**: A transaction MUST never hold a category from the other side. When the kind changes
   between expense and income, the category MUST become the new side's "Uncategorised"; when it
   changes to transfer, the category MUST be removed and a destination account required; when it
   changes from transfer, the destination MUST be removed and the category MUST become the new
@@ -358,7 +359,7 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 - **FR-030**: System MUST keep expense categories and income categories as two separate sets. A
   category picker MUST show only the set matching the transaction's kind, and the two sets MUST
   never appear in one list.
-- **FR-031**: On first launch, both sets MUST contain a predefined list of categories, each set
+- <a id="fr-031"></a>**FR-031**: On first launch, both sets MUST contain a predefined list of categories, each set
   including the protected categories "Uncategorised" and "Unaccounted".
 - **FR-032**: Users MUST be able to create, rename, recolour, and delete categories. Names MUST be
   unique within a set; the same name MAY exist on both sides.
@@ -366,7 +367,7 @@ attempt to delete a protected one, and verify transactions and budgets respond a
   allowing them to be renamed and recoloured.
 - **FR-034**: Deleting a category MUST move its transactions to "Uncategorised" on the same side and
   MUST remove any budget attached to it.
-- **FR-035**: System MUST itself assign "Uncategorised" to imported rows confirmed without a
+- <a id="fr-035"></a>**FR-035**: System MUST itself assign "Uncategorised" to imported rows confirmed without a
   category and to transactions whose category is deleted, and "Unaccounted" to reconciliation
   differences.
 
@@ -381,8 +382,9 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 
 **Insights**
 
-- **FR-050**: Users MUST be able to select a time period by start and end date, with presets for
-  common periods (see Assumptions), defaulting to the current calendar month.
+- <a id="fr-050"></a>**FR-050**: Users MUST be able to select a time period by start and end date,
+  with presets for common periods (see [Assumptions](#assumptions)), defaulting to the current
+  calendar month.
 - **FR-051**: Insights MUST show, for the selected period: spending over time as a line; the
   proportion of spending by expense category; the proportion of income by income category; and
   budget progress per budgeted expense category for the most recent calendar month in the period.
@@ -392,8 +394,8 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 
 **Whole application**
 
-- **FR-060**: Every flow in this spec MUST be completable in a browser at small window size without
-  horizontal scrolling (quantified in SC-007).
+- <a id="fr-060"></a>**FR-060**: Every flow in this spec MUST be completable in a browser at small
+  window size without horizontal scrolling (quantified in [SC-007](#sc-007)).
 - **FR-061**: The application MUST NOT send any user data or usage information to any external
   party, and MUST NOT require a network connection for any v1 capability.
 - **FR-062**: The application MUST NOT initiate, schedule, or instruct any movement of real money.
@@ -404,7 +406,7 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 
 - **Account**: Something the user holds money in. Has a name, a descriptive type, an opening
   balance, and a computed balance. Cash is an ordinary account; one is predefined and is
-  the default for manual entry (FR-006).
+  the default for manual entry ([FR-006](#fr-006)).
 - **Transaction**: One movement of money. Has a date, an amount of zero or more, an optional
   description, a kind (expense, income, transfer), and an account. An expense or income has one
   category from its side. A transfer has a destination account instead of a category.
@@ -424,7 +426,7 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 
 ### Measurable Outcomes
 
-- **SC-001**: A user with a saved mapping profile imports and fully reviews one month of bank
+- <a id="sc-001"></a>**SC-001**: A user with a saved mapping profile imports and fully reviews one month of bank
   activity (about 300 rows across about 40 vendors) in under 5 minutes, ending with zero rows in
   "Uncategorised" on that side.
 - **SC-002**: A user records a categorised cash expense in under 15 seconds from opening the entry
@@ -437,7 +439,7 @@ attempt to delete a protected one, and verify transactions and budgets respond a
   plus the net of its transactions, recomputed independently from the transaction list.
 - **SC-006**: A new user records their first categorised expense within 2 minutes of first opening
   the app, without creating any account or category.
-- **SC-007**: Every flow in this spec is completable in a browser window 360 pixels wide without
+- <a id="sc-007"></a>**SC-007**: Every flow in this spec is completable in a browser window 360 pixels wide without
   horizontal scrolling.
 - **SC-008**: During any flow in this spec, the application makes no connection to any destination
   other than the user's own machine.
@@ -446,6 +448,7 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 - **SC-010**: A 5,000-row CSV parses into a reviewable pending batch within 10 seconds.
 - **SC-011**: Over-limit budget categories are identifiable in Insights without reading any number.
 
+<a id="out-of-scope"></a>
 ## Out of Scope
 
 Listed so that "should we add…?" has an answer that does not require a meeting.
@@ -466,7 +469,7 @@ Listed so that "should we add…?" has an answer that does not require a meeting
 - Investment, asset, or net-worth tracking.
 - Tax reporting or accounting-standard exports.
 - Native mobile applications. Usable in a browser at a small window size is the whole v1 mobile
-  commitment (FR-060).
+  commitment ([FR-060](#fr-060)).
 - Recurring-transaction detection and forecasting.
 - Budget rollover, and budget periods other than monthly. Both are wanted later and will be
   user-selectable when they arrive.
@@ -483,6 +486,7 @@ Listed so that "should we add…?" has an answer that does not require a meeting
 - Drill-down from a chart into its transactions. Desirable, to be considered in UX design, not a v1
   commitment.
 
+<a id="assumptions"></a>
 ## Assumptions
 
 - **Single user, no sign-in.** The app runs on one person's own machine and holds one person's
@@ -490,28 +494,26 @@ Listed so that "should we add…?" has an answer that does not require a meeting
 - **Single currency.** All amounts are in one currency the app does not need to know; nothing is
   converted or labelled with a currency code.
 - **Account types** are a short fixed descriptive list (for example checking, savings, credit card,
-  cash, other). Nothing behaves differently by type (FR-004); a credit card's balance is simply
-  negative when money is owed.
-- **Vendor** for review grouping is the counterparty column when the profile maps one, otherwise
-  the description with leading and trailing whitespace removed, compared case-insensitively.
+  cash, other). Nothing behaves differently by type ([FR-004](#fr-004)); a credit card's balance is
+  simply negative when money is owed.
 - **Direction of amounts in import**: a negative amount in a single signed column is money out.
   Banks that export the opposite convention are handled by mapping debit and credit columns.
 - **Protected categories are selectable by the user** in pickers like any other category; "the app
-  assigns them itself" means the app also assigns them in the cases in FR-035, not that the user is
-  barred from choosing them.
+  assigns them itself" means the app also assigns them in the cases in [FR-035](#fr-035), not that
+  the user is barred from choosing them.
 - **Reconciliation transaction** is an ordinary transaction (editable, deletable) with an
   auto-filled description that names it as a reconciliation.
-- **Period presets** (FR-050) are: this month, last month, last 3 months, this year, and custom
-  start/end dates.
+- **Period presets** ([FR-050](#fr-050)) are: this month, last month, last 3 months, this year, and
+  custom start/end dates.
 - **Spending over time** plots one point per day when the period is within a single calendar month
   and one point per calendar month otherwise.
 - **Uniqueness**: account names, mapping profile names, and category names within a side are unique.
 - **Historical data starts where the user starts.** The opening balance exists because a user will
   never import an account's entire history. This assumption comes from the project vision document,
   which is not yet in this repository.
-- **The five-minute target** (SC-001) also comes from the vision document.
+- **The five-minute target** ([SC-001](#sc-001)) also comes from the vision document.
 - **Later budget periods**: v1 fixes the budget period to the calendar month, but rollover and other
-  periods are planned (Out of Scope), so planning should treat "monthly" as one period rule, not
-  the only conceivable one.
+  periods are planned ([Out of Scope](#out-of-scope)), so planning should treat "monthly" as one
+  period rule, not the only conceivable one.
 - **Predefined category lists** are chosen during planning; the spec requires only that both sides
-  ship non-empty and include the protected two (FR-031).
+  ship non-empty and include the protected two ([FR-031](#fr-031)).
