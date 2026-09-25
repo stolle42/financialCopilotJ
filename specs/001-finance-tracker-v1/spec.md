@@ -1,0 +1,473 @@
+# Feature Specification: Financial Copilot v1 — Personal Finance Tracker
+
+**Feature Branch**: `001-finance-tracker-v1`
+
+**Created**: 2026-09-25
+
+**Status**: Draft
+
+**Input**: User description: "We are building a personal finance tracker", plus a v1 features
+document defining five capabilities (accounts, transactions, categories, budgets, insights) and an
+explicit out-of-scope list. That document is folded into this spec in full; this spec is the single
+source for what v1 contains. Nothing here is optional; nothing not here is in v1.
+
+## User Scenarios & Testing *(mandatory)*
+
+### User Story 1 - Keep a trustworthy ledger by hand (Priority: P1)
+
+The user creates the accounts they want to track, each with the balance it held on the day tracking
+began, and records expenses, income, and transfers between their own accounts. Every account shows
+a balance computed from its opening balance and its transactions. Manual entry is fast enough to use
+for every cash purchase.
+
+**Why this priority**: Every other capability reads from this ledger. Without accounts and
+transactions there is nothing to import into, categorise, budget, or chart. A user with only this
+story has a usable cash book.
+
+**Independent Test**: Create two accounts, record an expense, an income, and a transfer, and confirm
+both balances equal opening balance plus the net of their transactions. Delivers a working ledger.
+
+**Acceptance Scenarios**:
+
+1. **Given** no accounts exist, **When** the user creates account "Checking" of type checking with
+   opening balance 1,250.00 as of 2026-09-01, **Then** the account list shows "Checking" with
+   balance 1,250.00.
+2. **Given** "Checking" with balance 1,250.00, **When** the user records an expense of 40.00 dated
+   2026-09-03, description "Weekly shop", category "Groceries", **Then** "Checking" shows 1,210.00.
+3. **Given** "Checking" (1,210.00) and "Cash" (0.00), **When** the user records a transfer of 100.00
+   from "Checking" to "Cash", **Then** "Checking" shows 1,110.00, "Cash" shows 100.00, and total
+   spending and total income are unchanged.
+4. **Given** the user is recording an expense, **When** the category picker opens, **Then** it offers
+   expense categories only, and exactly one entry named "Uncategorised".
+5. **Given** the user tries to save an expense with no category, **Then** the app refuses and names
+   the missing field; the same holds for an income with no category.
+6. **Given** the user tries to save a transfer with a category, or with the same account on both
+   sides, **Then** the app refuses.
+7. **Given** a cash account exists, **When** the user opens manual entry, **Then** date is today and
+   the account is pre-filled, so a complete expense needs only amount, description, and category.
+8. **Given** "Checking" has an opening balance of 1,250.00 as of 2026-09-01, **When** the user
+   changes the opening balance to 1,300.00, **Then** the computed balance rises by 50.00 and no
+   transaction is created.
+9. **Given** any account, **When** the user looks for a way to type in a balance directly, **Then**
+   none exists; the only ways to change a balance are transactions, the opening balance, and
+   reconciliation (User Story 5).
+
+---
+
+### User Story 2 - Import a bank CSV and review it by vendor (Priority: P2)
+
+The user downloads a CSV export from their bank, tells the app once how that bank's file is laid
+out, and imports it. Parsed rows wait in a pending batch outside the ledger. The user reviews the
+batch grouped by vendor, assigns categories a group at a time, marks own-account payments as
+transfers, and confirms. Re-importing an overlapping date range adds nothing twice.
+
+**Why this priority**: CSV import is the primary path for everything the bank sees and the
+highest-risk feature in the product. It is P2 only because the ledger it feeds must exist first.
+
+**Independent Test**: Import a real bank export with a new mapping profile, review and confirm it,
+then import the following month's file with the same profile and a deliberately overlapping range.
+Delivers bank data in the ledger with no duplicates and a saved profile.
+
+**Acceptance Scenarios**:
+
+1. **Given** a CSV whose columns are in an order the app has never seen, **When** the user assigns
+   the date, amount, and description columns, chooses the date format, decimal separator, and file
+   encoding, and saves this as profile "MyBank", **Then** the file parses into a pending batch and
+   no balance or figure in the app changes.
+2. **Given** profile "MyBank" exists, **When** the user imports next month's file from the same
+   bank, **Then** the profile is applied without any re-mapping.
+3. **Given** a bank whose export uses separate debit and credit columns, **When** the user maps both
+   in the profile, **Then** debit rows become expenses and credit rows become incomes.
+4. **Given** a pending batch of 300 rows from 40 vendors, **When** the user opens review, **Then** the
+   rows are shown as 40 vendor groups, and assigning a category to a group assigns it to every row
+   in the group.
+5. **Given** a vendor group whose rows belong in different categories, **When** the user unfolds the
+   group, **Then** each row can be given its own category without affecting the others.
+6. **Given** a row that is a payment to the user's own credit card account, **When** the user marks
+   it as a transfer to that account, **Then** on confirmation it enters the ledger as a transfer
+   with no category and is excluded from spending.
+7. **Given** a batch contains rows identical to transactions already in the ledger, **When** the user
+   opens review, **Then** those rows are flagged as duplicates and excluded from confirmation by
+   default, and the user can include any single flagged row.
+8. **Given** a reviewed batch, **When** the user confirms it, **Then** the included rows enter the
+   ledger, rows confirmed without a category land in "Uncategorised" on their side, and balances
+   update.
+9. **Given** a pending batch, **When** the user discards it, **Then** nothing enters the ledger.
+10. **Given** a file in which some rows cannot be parsed (unreadable date, missing amount), **When**
+    the batch is reviewed, **Then** those rows show the reason, cannot be confirmed, and the rest of
+    the batch remains reviewable.
+11. **Given** the user closes the app with a batch pending, **When** they return, **Then** the batch
+    is still pending and reviewable.
+
+---
+
+### User Story 3 - See where the money went over a chosen period (Priority: P3)
+
+The user opens Insights, picks a time period, and sees spending over time, the proportion of
+spending by expense category, and the proportion of income by income category. Unaccounted money is
+visible as a known unknown, never hidden.
+
+**Why this priority**: The charts are the product's purpose; the ledger and import exist to make
+them trustworthy. Ranked after import because charts over a hand-entered trickle are of little use.
+
+**Independent Test**: With a few months of transactions in the ledger, select several periods and
+verify that every chart reflects exactly the transactions in the period, excluding transfers.
+
+**Acceptance Scenarios**:
+
+1. **Given** transactions across several months, **When** the user selects a period, **Then** the
+   spending-over-time line, expense breakdown, and income breakdown include only transactions dated
+   within the period.
+2. **Given** transfers exist in the period, **Then** no chart or total includes them.
+3. **Given** a reconciliation shortfall in the period, **Then** expense "Unaccounted" appears in the
+   expense breakdown, visually distinguished from ordinary categories, with its true share.
+4. **Given** a reconciliation surplus in the period, **Then** income "Unaccounted" appears in the
+   income breakdown; this is the only place a surplus is surfaced.
+5. **Given** transactions in "Uncategorised", **Then** they appear in their side's breakdown as their
+   own slice, so the user can see how much sorting remains.
+6. **Given** a period with no transactions, **Then** the view shows an empty state, not an error.
+7. **Given** the user opens Insights, **Then** the period defaults to the current calendar month.
+
+---
+
+### User Story 4 - Plan spending with monthly budgets (Priority: P4)
+
+The user sets a monthly spending limit on an expense category. Insights shows, per budgeted
+category, how much of the limit has been spent in the period, with a clear over-limit state. Each
+calendar month starts fresh.
+
+**Why this priority**: This is what turns a ledger into an assistant: it tells the user whether they
+spent more than they intended. It needs the ledger, categories, and the Insights view to exist.
+
+**Independent Test**: Set a limit on one category, record expenses in it across two months, and
+verify progress for each month against the limit, including the over-limit state and the reset at
+month start.
+
+**Acceptance Scenarios**:
+
+1. **Given** expense category "Groceries", **When** the user sets a monthly limit of 400.00, **Then**
+   Insights for the current month shows Groceries spent against 400.00.
+2. **Given** Groceries spending of 430.00 in the month, **Then** the Groceries bar is in a clearly
+   distinguishable over-limit state.
+3. **Given** 250.00 unspent in September, **When** October begins, **Then** October's Groceries
+   progress starts at 0.00 against 400.00; nothing rolls over.
+4. **Given** an income category, or "Uncategorised", or "Unaccounted", **When** the user looks for a
+   way to set a budget on it, **Then** none is offered.
+5. **Given** a budgeted category, **When** the user changes or removes the limit, **Then** progress
+   reflects the change immediately.
+
+---
+
+### User Story 5 - Reconcile an account to reality (Priority: P5)
+
+The user states what an account actually holds right now. The app books the difference between the
+computed balance and the stated balance to "Unaccounted", so the computed balance is honest again.
+
+**Why this priority**: Computed balances drift from reality, especially for cash. Reconciliation is
+what keeps them trustworthy without letting the user edit a balance directly. It depends on the
+ledger and on the protected categories.
+
+**Independent Test**: With a known computed balance, reconcile to a lower and then a higher amount
+and verify the transactions created and the resulting balance.
+
+**Acceptance Scenarios**:
+
+1. **Given** "Cash" has a computed balance of 100.00, **When** the user reconciles it to 85.00,
+   **Then** an expense of 15.00 in expense "Unaccounted" is booked to "Cash" dated today, and "Cash"
+   shows 85.00.
+2. **Given** "Cash" has a computed balance of 100.00, **When** the user reconciles it to 120.00,
+   **Then** an income of 20.00 in income "Unaccounted" is booked to "Cash" dated today, and "Cash"
+   shows 120.00.
+3. **Given** computed and stated balances are equal, **When** the user reconciles, **Then** no
+   transaction is created and the user is told the account already matches.
+4. **Given** any account of any type, **Then** reconciliation is available; it is not a cash-only
+   operation.
+
+---
+
+### User Story 6 - Organise categories (Priority: P6)
+
+The user adjusts the predefined expense and income categories: creates, renames, recolours, and
+deletes them. The two protected categories on each side can be renamed and recoloured but never
+deleted.
+
+**Why this priority**: The predefined sets make the app useful on first launch, so category
+management is needed later than the ledger, import, and charts it feeds.
+
+**Independent Test**: Rename, recolour, create, and delete categories on both sides, including an
+attempt to delete a protected one, and verify transactions and budgets respond as specified.
+
+**Acceptance Scenarios**:
+
+1. **Given** first launch, **Then** both the expense set and the income set contain a predefined
+   list of categories, each including "Uncategorised" and "Unaccounted".
+2. **Given** an expense category "Eating out", **When** the user renames it to "Restaurants" and
+   changes its colour, **Then** all its transactions and its budget show the new name and colour.
+3. **Given** "Restaurants" has 12 transactions and a budget, **When** the user deletes it, **Then**
+   the 12 transactions move to expense "Uncategorised" and the budget is removed.
+4. **Given** "Uncategorised" or "Unaccounted" on either side, **When** the user tries to delete it,
+   **Then** the app refuses; renaming and recolouring succeed.
+5. **Given** an expense category named "Refunds" exists, **When** the user creates an income
+   category named "Refunds", **Then** it succeeds; **When** they create a second expense category
+   named "Refunds", **Then** the app refuses.
+
+---
+
+### Edge Cases
+
+- A transaction dated before its account's opening date is refused, with the explanation that the
+  opening date must be moved earlier if the transaction is genuine. In import review, such rows are
+  flagged and cannot be confirmed until the opening date is changed or the row is excluded.
+- A transfer's other leg appears when the counter-account's export is imported later. A pending row
+  whose account is the counter-account of an existing transfer, with the same date and amount, is
+  flagged as a duplicate like any other.
+- The same file is imported twice: every row is flagged as a duplicate and confirming with defaults
+  adds nothing.
+- A batch contains two identical rows (same date, amount, description): the second is flagged as a
+  duplicate of the first within the batch, because banks do emit genuine identical rows on the same
+  day, and the user can include it.
+- An import file has a header only, or no rows: the user is told the file contained no transactions
+  and no batch is created.
+- The Insights period spans more than one calendar month: budget progress compares spending in the
+  period against the monthly limit multiplied by the number of calendar months the period touches
+  (a partial month counts as a whole month).
+- A transaction's kind is changed between expense and income: the category is cleared and must be
+  chosen again from the other side. A transaction changed to or from a transfer likewise loses its
+  category or counter-account.
+- A transaction is moved to a different account: both accounts' balances update.
+- A transaction with an amount of zero, or a negative amount, is refused; the kind carries the
+  direction.
+- Two accounts, two mapping profiles, or two categories on the same side with the same name are
+  refused.
+- A very large expense "Unaccounted" share appears in Insights: it is shown at its true size; there
+  is no option to hide or merge it.
+- The browser window is narrow: every flow in this spec is completable at small window size without
+  horizontal scrolling.
+
+## Requirements *(mandatory)*
+
+### Functional Requirements
+
+**Accounts**
+
+- **FR-001**: Users MUST be able to create and edit an account with a name, a type, and an opening
+  balance as of an opening date.
+- **FR-002**: System MUST compute each account's balance as its opening balance plus the net effect
+  of its transactions. There MUST be no way to set a balance directly.
+- **FR-003**: System MUST refuse any transaction dated before its account's opening date.
+- **FR-004**: System MUST give no account type special behaviour; the type is descriptive only, and
+  a cash account is an ordinary account.
+- **FR-005**: Users MUST be able to reconcile any account by stating its actual balance. System MUST
+  book the difference as a single transaction dated the day of reconciliation: an expense in
+  expense "Unaccounted" when the stated balance is lower than the computed one, an income in income
+  "Unaccounted" when it is higher, and no transaction when they are equal.
+
+**Transactions**
+
+- **FR-010**: Every transaction MUST have a date, an amount greater than zero, an account, a
+  description, and a kind: expense, income, or transfer.
+- **FR-011**: An expense MUST carry exactly one expense category. An income MUST carry exactly one
+  income category. A transfer MUST carry no category and MUST name a second, different account of
+  the user's as its destination.
+- **FR-012**: System MUST exclude transfers from every spending figure, income figure, and budget.
+- **FR-013**: Users MUST be able to create, edit, and delete transactions manually.
+- **FR-014**: The manual-entry form MUST pre-fill the date with today and the account with the
+  default account (see Assumptions), so that recording an expense requires entering only amount,
+  description, and category.
+- **FR-015**: System MUST refuse to save a transaction whose category belongs to the other side, and
+  MUST clear the category when a transaction's kind changes.
+
+**CSV import**
+
+- **FR-020**: Users MUST be able to import transactions from a CSV file into a chosen account.
+- **FR-021**: Users MUST be able to define, name, save, and reuse a mapping profile that records:
+  which columns hold the date, the amount (one signed column, or separate debit and credit
+  columns), the description, and optionally the counterparty; the date format; the decimal
+  separator; and the file encoding.
+- **FR-022**: System MUST place parsed rows in a pending batch that has no effect on balances,
+  figures, or budgets until confirmed. Pending batches MUST survive closing and reopening the app.
+- **FR-023**: System MUST propose the kind of each row from the direction of its amount (money out
+  is an expense, money in is an income) and MUST let the user change any row to a transfer with a
+  counter-account during review.
+- **FR-024**: System MUST flag a pending row as a duplicate when it matches, on account, date,
+  amount, and description, either an existing ledger transaction or an earlier row in the same
+  batch; and when its account is the counter-account of an existing transfer with the same date
+  and amount.
+- **FR-025**: Flagged rows MUST be excluded from confirmation by default, and the user MUST be able
+  to include any individual flagged row.
+- **FR-026**: Review MUST group pending rows by vendor. Assigning a category to a group MUST assign
+  it to every row in the group. The user MUST be able to unfold a group and assign categories per
+  row.
+- **FR-027**: Confirming a batch MUST move its included rows into the ledger, placing rows without a
+  category in "Uncategorised" on their side. Discarding a batch MUST leave the ledger unchanged.
+- **FR-028**: Rows the profile cannot parse MUST be shown with the reason and MUST NOT be
+  confirmable; the remaining rows MUST stay reviewable.
+
+**Categories**
+
+- **FR-030**: System MUST keep expense categories and income categories as two separate sets. A
+  category picker MUST show only the set matching the transaction's kind, and the two sets MUST
+  never appear in one list.
+- **FR-031**: On first launch, both sets MUST contain a predefined list of categories, each set
+  including the protected categories "Uncategorised" and "Unaccounted".
+- **FR-032**: Users MUST be able to create, rename, recolour, and delete categories. Names MUST be
+  unique within a set; the same name MAY exist on both sides.
+- **FR-033**: System MUST refuse deletion of "Uncategorised" and "Unaccounted" on either side, while
+  allowing them to be renamed and recoloured.
+- **FR-034**: Deleting a category MUST move its transactions to "Uncategorised" on the same side and
+  MUST remove any budget attached to it.
+- **FR-035**: System MUST itself assign "Uncategorised" to imported rows confirmed without a
+  category and to transactions whose category is deleted, and "Unaccounted" to reconciliation
+  differences.
+
+**Budgets**
+
+- **FR-040**: Users MUST be able to set, change, and remove a monthly spending limit on any expense
+  category other than "Uncategorised" and "Unaccounted". Income categories MUST NOT carry budgets.
+- **FR-041**: Budget progress MUST compare the expenses in a category within a calendar month against
+  that month's limit. Each calendar month MUST start at zero; unspent amounts MUST NOT roll over.
+- **FR-042**: A category whose spending exceeds its limit MUST be shown in a state clearly
+  distinguishable from one within its limit.
+
+**Insights**
+
+- **FR-050**: Users MUST be able to select a time period by start and end date, with presets for
+  common periods (see Assumptions), defaulting to the current calendar month.
+- **FR-051**: Insights MUST show, for the selected period: spending over time as a line; the
+  proportion of spending by expense category; the proportion of income by income category; and
+  budget progress per budgeted expense category.
+- **FR-052**: "Unaccounted" MUST appear in its side's breakdown at its true share, visually
+  distinguished as a known unknown, and MUST NOT be hidden or merged.
+- **FR-053**: Charts MUST be read-only in v1.
+
+**Whole application**
+
+- **FR-060**: Every flow in this spec MUST be completable in a browser at small window size without
+  horizontal scrolling (quantified in SC-007).
+- **FR-061**: The application MUST NOT send any user data or usage information to any external
+  party, and MUST NOT require a network connection for any v1 capability.
+- **FR-062**: The application MUST NOT initiate, schedule, or instruct any movement of real money.
+
+### Key Entities
+
+- **Account**: Something the user holds money in. Has a name, a descriptive type, an opening balance
+  and opening date, and a computed balance. Cash is an ordinary account.
+- **Transaction**: One movement of money. Has a date, an amount, a description, a kind (expense,
+  income, transfer), and an account. An expense or income has one category from its side. A
+  transfer has a destination account instead of a category.
+- **Category**: A label for expenses or incomes. Has a name, a colour, a side (expense or income),
+  and whether it is protected. Each side has the protected "Uncategorised" (a to-do) and
+  "Unaccounted" (a final answer).
+- **Budget**: A monthly spending limit attached to one non-protected expense category.
+- **Mapping profile**: A named, reusable description of one bank's CSV layout: column roles, date
+  format, decimal separator, encoding.
+- **Pending batch**: The result of one import, held outside the ledger until confirmed or
+  discarded. Belongs to one account and one profile.
+- **Pending row**: One parsed line in a pending batch: its parsed fields, its vendor group, its
+  proposed kind, its category or counter-account, whether it is flagged as a duplicate, whether it
+  failed to parse, and whether it is included in confirmation.
+
+## Success Criteria *(mandatory)*
+
+### Measurable Outcomes
+
+- **SC-001**: A user with a saved mapping profile imports and fully reviews one month of bank
+  activity (about 300 rows across about 40 vendors) in under 5 minutes, ending with zero rows in
+  "Uncategorised" on that side.
+- **SC-002**: A user records a categorised cash expense in under 15 seconds from opening the entry
+  form.
+- **SC-003**: Re-importing a file that overlaps an already-confirmed range and accepting the review
+  defaults adds zero transactions to the ledger.
+- **SC-004**: Recording any transfer leaves every spending total, income total, and budget progress
+  figure unchanged.
+- **SC-005**: At every moment, every displayed account balance equals the account's opening balance
+  plus the net of its transactions, recomputed independently from the transaction list.
+- **SC-006**: A new user records their first categorised expense within 2 minutes of first opening
+  the app, without creating any category.
+- **SC-007**: Every flow in this spec is completable in a browser window 360 pixels wide without
+  horizontal scrolling.
+- **SC-008**: During any flow in this spec, the application makes no connection to any destination
+  other than the user's own machine.
+- **SC-009**: Insights for a period containing 5,000 transactions renders within 2 seconds of
+  choosing the period.
+- **SC-010**: A 5,000-row CSV parses into a reviewable pending batch within 10 seconds.
+- **SC-011**: Over-limit budget categories are identifiable in Insights without reading any number.
+
+## Out of Scope
+
+Listed so that "should we add…?" has an answer that does not require a meeting.
+
+**Never** — these would change what the product is:
+
+- Moving money. The app is a read-only ledger; it never initiates a payment.
+- Bank APIs, Open Banking, credential storage, or screen scraping. CSV is the boundary, which keeps
+  the app free of credentials, licensing regimes, and per-bank integration maintenance.
+- Telemetry or analytics of any kind, opt-in or otherwise.
+
+**Not in v1** — defensible later, deliberately excluded now:
+
+- Multi-currency support.
+- Archiving or deleting accounts. An unused account stays in the list; revisit if dead accounts
+  actually accumulate.
+- Linking an income category to an expense category so a refund offsets the category it came from.
+- Investment, asset, or net-worth tracking.
+- Tax reporting or accounting-standard exports.
+- Native mobile applications. Usable in a browser at a small window size is the whole v1 mobile
+  commitment (FR-060).
+- Recurring-transaction detection and forecasting.
+- Budget rollover, and budget periods other than monthly. Both are wanted later and will be
+  user-selectable when they arrive.
+- Rule-based auto-categorisation on import; it collides with KISS as a product rule.
+- Learned recall: pre-filling a vendor's category from the user's own past decisions, with nothing
+  to author. The first thing to add once import is proven.
+- AI features, deferred by design rather than rejected: receipt scanning into a transaction,
+  analysis with recommendations, and transaction pre-categorisation on import (local-only,
+  suggestion-only, user-invoked, and needed only if learned recall proves insufficient). The ledger
+  must be provably trustworthy before anything probabilistic sits on top of it. The name Financial
+  Copilot anticipates these features.
+- Docker images and desktop packaging. v1 is a local web app; these are later delivery options and
+  v1 must not foreclose them.
+- Drill-down from a chart into its transactions. Desirable, to be considered in UX design, not a v1
+  commitment.
+
+## Assumptions
+
+- **Single user, no sign-in.** The app runs on one person's own machine and holds one person's
+  finances. There are no user accounts, roles, or sharing.
+- **Single currency.** All amounts are in one currency the app does not need to know; nothing is
+  converted or labelled with a currency code.
+- **Account types** are a short fixed descriptive list (for example checking, savings, credit card,
+  cash, other). Nothing behaves differently by type (FR-004); a credit card's balance is simply
+  negative when money is owed.
+- **Default account for manual entry** (FR-014): the account most recently used for manual entry;
+  before any manual entry exists, the first account of type cash if there is one, otherwise the
+  first account. This is what "defaulted to Cash" means when the user has no cash account.
+- **Vendor** for review grouping is the counterparty column when the profile maps one, otherwise
+  the description with leading and trailing whitespace removed, compared case-insensitively.
+- **Direction of amounts in import**: a negative amount in a single signed column is money out.
+  Banks that export the opposite convention are handled by mapping debit and credit columns.
+- **Protected categories are selectable by the user** in pickers like any other category; "the app
+  assigns them itself" means the app also assigns them in the cases in FR-035, not that the user is
+  barred from choosing them.
+- **Reconciliation transaction** is an ordinary transaction (editable, deletable) with an
+  auto-filled description that names it as a reconciliation.
+- **Budget progress over multi-month periods** uses the rule in Edge Cases (limit × months
+  touched). This is the simplest rule consistent with "a budget is an intention for a period"; it
+  is a candidate for review in `/speckit-clarify`.
+- **Period presets** (FR-050) are: this month, last month, last 3 months, this year, and custom
+  start/end dates.
+- **Spending over time** plots one point per day when the period is within a single calendar month
+  and one point per calendar month otherwise.
+- **Landing view** is the transaction list. Accounts are deliberately low-prominence: they exist to
+  make the numbers trustworthy and are not the app's home. UX design may make Insights the landing
+  view instead.
+- **Uniqueness**: account names, mapping profile names, and category names within a side are unique.
+- **Historical data starts where the user starts.** The opening balance exists because a user will
+  never import an account's entire history. This assumption comes from the project vision document,
+  which is not yet in this repository.
+- **The five-minute target** (SC-001) also comes from the vision document.
+- **Later budget periods**: v1 fixes the budget period to the calendar month, but rollover and other
+  periods are planned (Out of Scope), so planning should treat "monthly" as one period rule, not
+  the only conceivable one.
+- **Predefined category lists** are chosen during planning; the spec requires only that both sides
+  ship non-empty and include the protected two (FR-031).
