@@ -13,6 +13,7 @@ source for what v1 contains. Nothing here is optional; nothing not here is in v1
 
 ## User Scenarios & Testing *(mandatory)*
 
+<a id="user-story-1"></a>
 ### User Story 1 - Keep a trustworthy ledger by hand (Priority: P1)
 
 The user creates the accounts they want to track, each with the balance it held on the day tracking
@@ -63,6 +64,7 @@ both balances equal opening balance plus the net of their transactions. Delivers
 
 ---
 
+<a id="user-story-2"></a>
 ### User Story 2 - Import a bank CSV and review it by vendor (Priority: P2)
 
 The user downloads a CSV export from their bank, tells the app once how that bank's file is laid
@@ -115,6 +117,7 @@ Delivers bank data in the ledger with no duplicates and a saved profile.
 
 ---
 
+<a id="user-story-3"></a>
 ### User Story 3 - See where the money went over a chosen period (Priority: P3)
 
 The user opens Insights, picks a time period, and sees spending over time, the proportion of
@@ -144,6 +147,7 @@ verify that every chart reflects exactly the transactions in the period, excludi
 
 ---
 
+<a id="user-story-4"></a>
 ### User Story 4 - Plan spending with monthly budgets (Priority: P4)
 
 The user sets a monthly spending limit on an expense category. Insights shows, per budgeted
@@ -202,6 +206,7 @@ and verify the transactions created and the resulting balance.
 
 ---
 
+<a id="user-story-6"></a>
 ### User Story 6 - Organise categories (Priority: P6)
 
 The user adjusts the predefined expense and income categories: creates, renames, recolours, and
@@ -230,6 +235,7 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 
 ---
 
+<a id="edge-cases"></a>
 ### Edge Cases
 
 - The user imports history older than the transactions the opening balance was set against: the
@@ -265,11 +271,11 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 
 **Accounts**
 
-- **FR-001**: Users MUST be able to create and edit an account with a name, a type, and an opening
+- <a id="fr-001"></a>**FR-001**: Users MUST be able to create and edit an account with a name, a type, and an opening
   balance: what the account held before its earliest recorded transaction. Changing the opening
   balance MUST require the user to confirm a severe warning that every computed balance of the
   account will change.
-- **FR-002**: System MUST compute each account's balance as its opening balance plus the net effect
+- <a id="fr-002"></a>**FR-002**: System MUST compute each account's balance as its opening balance plus the net effect
   of its transactions. A balance MUST NOT be stored or edited as a number of its own; stating an
   account's actual balance is done through reconciliation ([FR-005](#fr-005)), which books the
   difference as a transaction.
@@ -288,14 +294,14 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 
 - <a id="fr-010"></a>**FR-010**: Every transaction MUST have a date, an amount of zero or more, an account, and a
   kind: expense, income, or transfer. A description is optional.
-- **FR-011**: An expense MUST carry exactly one expense category and an income exactly one income
+- <a id="fr-011"></a>**FR-011**: An expense MUST carry exactly one expense category and an income exactly one income
   category; the form MUST never offer a state without one, holding the side's "Uncategorised"
   until the user picks another. A transfer MUST carry no category and MUST name a second,
   different account of the user's as its destination; the form MUST offer a destination account in
   place of the category and MUST NOT offer the source account as destination.
-- **FR-012**: System MUST exclude transfers from every spending figure, income figure, and budget.
-- **FR-013**: Users MUST be able to create, edit, and delete transactions manually.
-- **FR-014**: The manual-entry form MUST open with kind expense, date today, amount 0.00, account
+- <a id="fr-012"></a>**FR-012**: System MUST exclude transfers from every spending figure, income figure, and budget.
+- <a id="fr-013"></a>**FR-013**: Users MUST be able to create, edit, and delete transactions manually.
+- <a id="fr-014"></a>**FR-014**: The manual-entry form MUST open with kind expense, date today, amount 0.00, account
   the default account ([FR-006](#fr-006)), category expense "Uncategorised", and an empty
   description, and MUST be saveable without any change; recording a typical cash expense means
   editing only the amount and the category.
@@ -307,21 +313,21 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 
 **CSV import**
 
-- **FR-020**: Users MUST be able to import transactions from a CSV file into a chosen account.
-- **FR-021**: Users MUST be able to define, name, save, and reuse a mapping profile that records:
+- <a id="fr-020"></a>**FR-020**: Users MUST be able to import transactions from a CSV file into a chosen account.
+- <a id="fr-021"></a>**FR-021**: Users MUST be able to define, name, save, and reuse a mapping profile that records:
   which columns hold the date, the amount (one signed column, or separate debit and credit
   columns), the description, and optionally the counterparty; the date format; the decimal
   separator; and the file encoding.
-- **FR-022**: System MUST place parsed rows in a pending batch that has no effect on balances,
+- <a id="fr-022"></a>**FR-022**: System MUST place parsed rows in a pending batch that has no effect on balances,
   figures, or budgets until confirmed. Pending batches MUST survive closing and reopening the app.
-- **FR-023**: System MUST propose the kind of each row from the direction of its amount (money out
+- <a id="fr-023"></a>**FR-023**: System MUST propose the kind of each row from the direction of its amount (money out
   is an expense, money in is an income) and MUST let the user change any row to a transfer with a
   counter-account during review.
-- **FR-024**: System MUST flag a pending row as a duplicate when it matches, on account, date, and
+- <a id="fr-024"></a>**FR-024**: System MUST flag a pending row as a duplicate when it matches, on account, date, and
   amount, either an existing ledger transaction or an earlier row in the same batch, whether or
   not the descriptions match; and when its account is the counter-account of an existing transfer
   with the same date and amount.
-- **FR-025**: Flagged rows MUST be excluded from confirmation by default and MUST NOT appear among
+- <a id="fr-025"></a>**FR-025**: Flagged rows MUST be excluded from confirmation by default and MUST NOT appear among
   the rows under review. Review MUST show how many rows are flagged; selecting that number MUST
   present them, and the user MUST be able to include any individual one.
 - <a id="fr-026"></a>**FR-026**: Review MUST group pending rows by vendor where possible. The vendor
@@ -329,9 +335,9 @@ attempt to delete a protected one, and verify transactions and budgets respond a
   ungrouped. Also, if a group contains only one transaction, it is not grouped. Assigning a
   category to a group MUST assign it to every row in the group. The user MUST be able to unfold a
   group and assign categories per row.
-- **FR-027**: Confirming a batch MUST move its included rows into the ledger with the categories
+- <a id="fr-027"></a>**FR-027**: Confirming a batch MUST move its included rows into the ledger with the categories
   shown in review. Discarding a batch MUST leave the ledger unchanged.
-- **FR-028**: Rows the profile cannot parse MUST NOT appear among the rows under review and MUST
+- <a id="fr-028"></a>**FR-028**: Rows the profile cannot parse MUST NOT appear among the rows under review and MUST
   NOT be confirmable. Review MUST show how many there are; selecting that number MUST present them
   with the reason each failed. The remaining rows MUST stay reviewable.
 - <a id="fr-029"></a>**FR-029**: Every row under review MUST hold a category, initially its side's
@@ -340,16 +346,16 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 
 **Categories**
 
-- **FR-030**: System MUST keep expense categories and income categories as two separate sets. A
+- <a id="fr-030"></a>**FR-030**: System MUST keep expense categories and income categories as two separate sets. A
   category picker MUST show only the set matching the transaction's kind, and the two sets MUST
   never appear in one list.
 - <a id="fr-031"></a>**FR-031**: On first launch, both sets MUST contain a predefined list of categories, each set
   including the protected categories "Uncategorised" and "Unaccounted".
-- **FR-032**: Users MUST be able to create, rename, recolour, and delete categories. Names MUST be
+- <a id="fr-032"></a>**FR-032**: Users MUST be able to create, rename, recolour, and delete categories. Names MUST be
   unique within a set; the same name MAY exist on both sides.
-- **FR-033**: System MUST refuse deletion of "Uncategorised" and "Unaccounted" on either side, while
+- <a id="fr-033"></a>**FR-033**: System MUST refuse deletion of "Uncategorised" and "Unaccounted" on either side, while
   allowing them to be renamed and recoloured.
-- **FR-034**: Deleting a category MUST move its transactions to "Uncategorised" on the same side and
+- <a id="fr-034"></a>**FR-034**: Deleting a category MUST move its transactions to "Uncategorised" on the same side and
   MUST remove any budget attached to it.
 - <a id="fr-035"></a>**FR-035**: System MUST itself assign "Uncategorised" to imported rows the
   user did not recategorise ([FR-029](#fr-029)) and to transactions whose category is deleted, and
@@ -357,35 +363,36 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 
 **Budgets**
 
-- **FR-040**: Users MUST be able to set, change, and remove a monthly spending limit on any expense
+- <a id="fr-040"></a>**FR-040**: Users MUST be able to set, change, and remove a monthly spending limit on any expense
   category other than "Uncategorised" and "Unaccounted". Income categories MUST NOT carry budgets.
-- **FR-041**: Budget progress MUST compare the expenses in a category within a calendar month against
+- <a id="fr-041"></a>**FR-041**: Budget progress MUST compare the expenses in a category within a calendar month against
   that month's limit. Each calendar month MUST start at zero; unspent amounts MUST NOT roll over.
-- **FR-042**: A category whose spending exceeds its limit MUST be shown in a state clearly
+- <a id="fr-042"></a>**FR-042**: A category whose spending exceeds its limit MUST be shown in a state clearly
   distinguishable from one within its limit.
 
 **Insights**
 
 - <a id="fr-050"></a>**FR-050**: Users MUST be able to select a time period by start and end date,
-  with presets for common periods (see [Assumptions](#assumptions)), defaulting to the current
+  with presets for common periods, defaulting to the current
   calendar month.
-- **FR-051**: Insights MUST show, for the selected period: spending over time as a line; the
+- <a id="fr-051"></a>**FR-051**: Insights MUST show, for the selected period: spending over time as a line; the
   proportion of spending by expense category; the proportion of income by income category; and
   budget progress per budgeted expense category for the most recent calendar month in the period.
-- **FR-052**: "Unaccounted" MUST appear in its side's breakdown at its true share, visually
+- <a id="fr-052"></a>**FR-052**: "Unaccounted" MUST appear in its side's breakdown at its true share, visually
   distinguished as a known unknown, and MUST NOT be hidden or merged.
-- **FR-053**: Charts MUST be read-only in v1.
+- <a id="fr-053"></a>**FR-053**: Charts MUST be read-only in v1.
 
 **Whole application**
 
 - <a id="fr-060"></a>**FR-060**: Every flow in this spec MUST be completable in a browser at small
   window size without horizontal scrolling (quantified in [SC-007](#sc-007)).
-- **FR-061**: The application MUST NOT send any user data or usage information to any external
+- <a id="fr-061"></a>**FR-061**: The application MUST NOT send any user data or usage information to any external
   party, and MUST NOT require a network connection for any v1 capability.
-- **FR-062**: The application MUST NOT initiate, schedule, or instruct any movement of real money.
-- **FR-063**: The application MUST open on the transaction list. Accounts are deliberately
+- <a id="fr-062"></a>**FR-062**: The application MUST NOT initiate, schedule, or instruct any movement of real money.
+- <a id="fr-063"></a>**FR-063**: The application MUST open on the transaction list. Accounts are deliberately
   low-prominence: they exist to make the numbers trustworthy and are not the app's home.
 
+<a id="key-entities"></a>
 ### Key Entities
 
 - **Account**: Something the user holds money in. Has a name, a descriptive type, an opening
@@ -413,24 +420,22 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 - <a id="sc-001"></a>**SC-001**: A user with a saved mapping profile that maps a counterparty column
   imports and fully reviews one month of bank activity (about 300 rows across about 40 vendors) in
   under 5 minutes, ending with zero rows in "Uncategorised" on that side.
-- **SC-002**: A user records a categorised cash expense in under 15 seconds from opening the entry
+- <a id="sc-002"></a>**SC-002**: A user records a categorised cash expense in under 15 seconds from opening the entry
   form.
-- **SC-003**: Re-importing a file that overlaps an already-confirmed range and accepting the review
+- <a id="sc-003"></a>**SC-003**: Re-importing a file that overlaps an already-confirmed range and accepting the review
   defaults adds zero transactions to the ledger.
-- **SC-004**: Recording any transfer leaves every spending total, income total, and budget progress
+- <a id="sc-004"></a>**SC-004**: Recording any transfer leaves every spending total, income total, and budget progress
   figure unchanged.
-- **SC-005**: At every moment, every displayed account balance equals the account's opening balance
+- <a id="sc-005"></a>**SC-005**: At every moment, every displayed account balance equals the account's opening balance
   plus the net of its transactions, recomputed independently from the transaction list.
-- **SC-006**: A new user records their first categorised expense within 2 minutes of first opening
+- <a id="sc-006"></a>**SC-006**: A new user records their first categorised expense within 2 minutes of first opening
   the app, without creating any account or category.
 - <a id="sc-007"></a>**SC-007**: Every flow in this spec is completable in a browser window 360 pixels wide without
   horizontal scrolling.
-- **SC-008**: During any flow in this spec, the application makes no connection to any destination
-  other than the user's own machine.
-- **SC-009**: Insights for a period containing 5,000 transactions renders within 2 seconds of
+- <a id="sc-009"></a>**SC-009**: Insights for a period containing 5,000 transactions renders within 2 seconds of
   choosing the period.
-- **SC-010**: A 5,000-row CSV parses into a reviewable pending batch within 10 seconds.
-- **SC-011**: Over-limit budget categories are identifiable in Insights without reading any number.
+- <a id="sc-010"></a>**SC-010**: A 5,000-row CSV parses into a reviewable pending batch within 10 seconds.
+- <a id="sc-011"></a>**SC-011**: Over-limit budget categories are identifiable in Insights without reading any number.
 
 <a id="out-of-scope"></a>
 ## Out of Scope

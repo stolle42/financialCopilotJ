@@ -11,7 +11,8 @@
 - Q: Which view does the app open on? → A: The transaction list, for now; may change later.
 - Q: When a bank file has no counterparty column, how does review decide two rows share a vendor?
   → A: In v1 it does not: rows are grouped only by a mapped counterparty column and are otherwise
-  ungrouped. Deriving a vendor from the description is deferred ([Out of Scope](#out-of-scope)).
+  ungrouped. Deriving a vendor from the description is deferred
+  ([Out of Scope](001-finance-tracker-v1/spec.md#out-of-scope)).
 - Q: Can an expense or income be saved without a category? → A: No, and the UI never offers that
   state: the category holds the side's "Uncategorised" until the user picks another.
 - Q: Can a transfer be given a category? → A: No; when the kind is transfer, the form shows a
