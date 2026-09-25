@@ -22,8 +22,8 @@ source for what v1 contains. Nothing here is optional; nothing not here is in v1
   For the most recent calendar month in the period only.
 - Q: Which view does the app open on? → A: The transaction list, for now; may change later.
 - Q: When a bank file has no counterparty column, how does review decide two rows share a vendor?
-  → A: By the description truncated at its first digit, punctuation removed, whitespace collapsed,
-  ignoring case; if that leaves nothing, by the whole description normalised the same way.
+  → A: In v1 it does not: rows are grouped only by a mapped counterparty column and are otherwise
+  ungrouped. Deriving a vendor from the description is deferred ([Out of Scope](#out-of-scope)).
 - Q: Can an expense or income be saved without a category? → A: No, and the UI never offers that
   state: the category holds the side's "Uncategorised" until the user picks another.
 - Q: Can a transfer be given a category? → A: No; when the kind is transfer, the form shows a
@@ -33,6 +33,15 @@ source for what v1 contains. Nothing here is optional; nothing not here is in v1
   empty. Saving unchanged books a 0.00 expense with no description to "Cash". Description is
   optional; a zero amount is allowed.
 - Q: How is an opening balance changed? → A: Only after a severe warning that the user confirms.
+- Q: Is reconciliation a way to enter a balance? → A: Yes; the user states the actual balance and
+  the app books the difference as a transaction. What is forbidden is storing or editing the
+  balance as a number of its own.
+- Q: Is a row a duplicate when only its description differs? → A: Yes; duplicates match on
+  account, date, and amount only.
+- Q: How are unparsable and duplicate rows shown in review? → A: Low-prominence: they are kept out
+  of the rows under review, review shows a count for each, and selecting the count presents them.
+- Q: Can an imported row be confirmed without a category? → A: No; every row's category dropdown
+  holds the side's "Uncategorised" until the user picks another.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -110,27 +119,29 @@ Delivers bank data in the ledger with no duplicates and a saved profile.
    bank, **Then** the profile is applied without any re-mapping.
 3. **Given** a bank whose export uses separate debit and credit columns, **When** the user maps both
    in the profile, **Then** debit rows become expenses and credit rows become incomes.
-4. **Given** a pending batch of 300 rows from 40 vendors, **When** the user opens review, **Then** the
-   rows are shown as 40 vendor groups, and assigning a category to a group assigns it to every row
-   in the group.
+4. **Given** a pending batch of 300 rows from 40 vendors, from a file whose profile maps a
+   counterparty column, **When** the user opens review, **Then** each vendor with more than one row
+   is shown as one group, vendors with a single row are shown as plain rows, and assigning a
+   category to a group assigns it to every row in the group.
 5. **Given** a vendor group whose rows belong in different categories, **When** the user unfolds the
    group, **Then** each row can be given its own category without affecting the others.
-6. **Given** a file with no counterparty column containing rows described "AMAZON *2K4F7",
-   "Amazon *9Q1D3", and "SHELL 1234 MAINSTREET", **When** the user opens review, **Then** the two
-   Amazon rows are in one vendor group and the Shell row is in another.
+6. **Given** a file whose profile maps no counterparty column, **When** the user opens review,
+   **Then** the rows are presented ungrouped, each with its own category dropdown.
 7. **Given** a row that is a payment to the user's own credit card account, **When** the user marks
    it as a transfer to that account, **Then** on confirmation it enters the ledger as a transfer
    with no category and is excluded from spending.
-8. **Given** a batch contains rows identical to transactions already in the ledger, **When** the user
-   opens review, **Then** those rows are flagged as duplicates and excluded from confirmation by
-   default, and the user can include any single flagged row.
+8. **Given** a batch contains rows matching transactions already in the ledger on account, date,
+   and amount but with different descriptions, **When** the user opens review, **Then** those rows
+   are not among the rows under review, a count of duplicates is shown, selecting the count
+   presents them, and the user can include any single one.
 9. **Given** a reviewed batch, **When** the user confirms it, **Then** the included rows enter the
-   ledger, rows confirmed without a category land in "Uncategorised" on their side, and balances
-   update.
+   ledger with the categories shown in review, rows the user left untouched in "Uncategorised",
+   and balances update.
 10. **Given** a pending batch, **When** the user discards it, **Then** nothing enters the ledger.
 11. **Given** a file in which some rows cannot be parsed (unreadable date, missing amount), **When**
-    the batch is reviewed, **Then** those rows show the reason, cannot be confirmed, and the rest of
-    the batch remains reviewable.
+    the batch is reviewed, **Then** those rows are not among the rows under review, a count of
+    unparsable rows is shown, selecting the count presents them with the reason each failed, they
+    cannot be confirmed, and the rest of the batch remains reviewable.
 12. **Given** the user closes the app with a batch pending, **When** they return, **Then** the batch
     is still pending and reviewable.
 
@@ -261,9 +272,9 @@ attempt to delete a protected one, and verify transactions and budgets respond a
   flagged as a duplicate like any other.
 - The same file is imported twice: every row is flagged as a duplicate and confirming with defaults
   adds nothing.
-- A batch contains two identical rows (same date, amount, description): the second is flagged as a
-  duplicate of the first within the batch, because banks do emit genuine identical rows on the same
-  day, and the user can include it.
+- A batch contains two rows with the same date and amount: the second is flagged as a duplicate of
+  the first within the batch, because banks do emit genuine identical rows on the same day, and
+  the user can include it.
 - An import file has a header only, or no rows: the user is told the file contained no transactions
   and no batch is created.
 - The Insights period spans more than one calendar month: budget progress is shown for the most
@@ -291,16 +302,17 @@ attempt to delete a protected one, and verify transactions and budgets respond a
   balance MUST require the user to confirm a severe warning that every computed balance of the
   account will change.
 - **FR-002**: System MUST compute each account's balance as its opening balance plus the net effect
-  of its transactions. There MUST be no way to set a balance directly.
+  of its transactions. A balance MUST NOT be stored or edited as a number of its own; stating an
+  account's actual balance is done through reconciliation ([FR-005](#fr-005)), which books the
+  difference as a transaction.
 - <a id="fr-004"></a>**FR-004**: System MUST give no account type special behaviour; the type is descriptive only, and
   a cash account is an ordinary account.
-- **FR-005**: Users MUST be able to reconcile any account by stating its actual balance. System MUST
-  book the difference as a single transaction dated the day of reconciliation: an expense in
-  expense "Unaccounted" when the stated balance is lower than the computed one, an income in income
+- <a id="fr-005"></a>**FR-005**: Users MUST be able to reconcile any account by stating its actual balance. System MUST
+  book the difference as a single transaction dated the day of reconciliation: an expense of the category "Unaccounted" when the stated balance is lower than the computed one, an income of the category
   "Unaccounted" when it is higher, and no transaction when they are equal.
 - <a id="fr-006"></a>**FR-006**: On first launch, system MUST create one account named "Cash", of
   type cash, with an opening balance of 0.00. It is an ordinary account ([FR-004](#fr-004)),
-  editable like any other, and it is the default account for manual entry. Should it not exist,
+  editable like any other, and it is the default account for manual entry. Once it gets deleted,
   the default is the account most recently used for manual entry; since accounts cannot be deleted
   in v1 ([Out of Scope](#out-of-scope)), this fallback is not reachable in v1.
 
@@ -337,22 +349,26 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 - **FR-023**: System MUST propose the kind of each row from the direction of its amount (money out
   is an expense, money in is an income) and MUST let the user change any row to a transfer with a
   counter-account during review.
-- **FR-024**: System MUST flag a pending row as a duplicate when it matches, on account, date,
-  amount, and description, either an existing ledger transaction or an earlier row in the same
-  batch; and when its account is the counter-account of an existing transfer with the same date
-  and amount.
-- **FR-025**: Flagged rows MUST be excluded from confirmation by default, and the user MUST be able
-  to include any individual flagged row.
-- **FR-026**: Review MUST group pending rows by vendor. The vendor is the counterparty column when
-  the profile maps one; otherwise it is the description truncated at its first digit, with
-  punctuation removed and whitespace collapsed, compared ignoring case; if truncation leaves
-  nothing, the whole description normalised the same way. Assigning a category to a group MUST
-  assign it to every row in the group. The user MUST be able to unfold a group and assign
-  categories per row.
-- **FR-027**: Confirming a batch MUST move its included rows into the ledger, placing rows without a
-  category in "Uncategorised" on their side. Discarding a batch MUST leave the ledger unchanged.
-- **FR-028**: Rows the profile cannot parse MUST be shown with the reason and MUST NOT be
-  confirmable; the remaining rows MUST stay reviewable.
+- **FR-024**: System MUST flag a pending row as a duplicate when it matches, on account, date, and
+  amount, either an existing ledger transaction or an earlier row in the same batch, whether or
+  not the descriptions match; and when its account is the counter-account of an existing transfer
+  with the same date and amount.
+- **FR-025**: Flagged rows MUST be excluded from confirmation by default and MUST NOT appear among
+  the rows under review. Review MUST show how many rows are flagged; selecting that number MUST
+  present them, and the user MUST be able to include any individual one.
+- <a id="fr-026"></a>**FR-026**: Review MUST group pending rows by vendor where possible. The vendor
+  is the counterparty column when the profile maps one, otherwise transactions are presented
+  ungrouped. Also, if a group contains only one transaction, it is not grouped. Assigning a
+  category to a group MUST assign it to every row in the group. The user MUST be able to unfold a
+  group and assign categories per row.
+- **FR-027**: Confirming a batch MUST move its included rows into the ledger with the categories
+  shown in review. Discarding a batch MUST leave the ledger unchanged.
+- **FR-028**: Rows the profile cannot parse MUST NOT appear among the rows under review and MUST
+  NOT be confirmable. Review MUST show how many there are; selecting that number MUST present them
+  with the reason each failed. The remaining rows MUST stay reviewable.
+- <a id="fr-029"></a>**FR-029**: Every row under review MUST hold a category, initially its side's
+  "Uncategorised"; the category dropdown MUST offer no empty state, so no row can be confirmed
+  without a category.
 
 **Categories**
 
@@ -367,9 +383,9 @@ attempt to delete a protected one, and verify transactions and budgets respond a
   allowing them to be renamed and recoloured.
 - **FR-034**: Deleting a category MUST move its transactions to "Uncategorised" on the same side and
   MUST remove any budget attached to it.
-- <a id="fr-035"></a>**FR-035**: System MUST itself assign "Uncategorised" to imported rows confirmed without a
-  category and to transactions whose category is deleted, and "Unaccounted" to reconciliation
-  differences.
+- <a id="fr-035"></a>**FR-035**: System MUST itself assign "Uncategorised" to imported rows the
+  user did not recategorise ([FR-029](#fr-029)) and to transactions whose category is deleted, and
+  "Unaccounted" to reconciliation differences.
 
 **Budgets**
 
@@ -426,9 +442,9 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 
 ### Measurable Outcomes
 
-- <a id="sc-001"></a>**SC-001**: A user with a saved mapping profile imports and fully reviews one month of bank
-  activity (about 300 rows across about 40 vendors) in under 5 minutes, ending with zero rows in
-  "Uncategorised" on that side.
+- <a id="sc-001"></a>**SC-001**: A user with a saved mapping profile that maps a counterparty column
+  imports and fully reviews one month of bank activity (about 300 rows across about 40 vendors) in
+  under 5 minutes, ending with zero rows in "Uncategorised" on that side.
 - **SC-002**: A user records a categorised cash expense in under 15 seconds from opening the entry
   form.
 - **SC-003**: Re-importing a file that overlaps an already-confirmed range and accepting the review
@@ -474,6 +490,9 @@ Listed so that "should we add…?" has an answer that does not require a meeting
 - Budget rollover, and budget periods other than monthly. Both are wanted later and will be
   user-selectable when they arrive.
 - Rule-based auto-categorisation on import; it collides with KISS as a product rule.
+- Vendor grouping for files without a counterparty column, by truncating the description at its
+  first digit (punctuation removed, whitespace collapsed, ignoring case). Fine for a later version;
+  v1 groups only by a mapped counterparty column ([FR-026](#fr-026)).
 - Learned recall: pre-filling a vendor's category from the user's own past decisions, with nothing
   to author. The first thing to add once import is proven.
 - AI features, deferred by design rather than rejected: receipt scanning into a transaction,
@@ -485,35 +504,3 @@ Listed so that "should we add…?" has an answer that does not require a meeting
   v1 must not foreclose them.
 - Drill-down from a chart into its transactions. Desirable, to be considered in UX design, not a v1
   commitment.
-
-<a id="assumptions"></a>
-## Assumptions
-
-- **Single user, no sign-in.** The app runs on one person's own machine and holds one person's
-  finances. There are no user accounts, roles, or sharing.
-- **Single currency.** All amounts are in one currency the app does not need to know; nothing is
-  converted or labelled with a currency code.
-- **Account types** are a short fixed descriptive list (for example checking, savings, credit card,
-  cash, other). Nothing behaves differently by type ([FR-004](#fr-004)); a credit card's balance is
-  simply negative when money is owed.
-- **Direction of amounts in import**: a negative amount in a single signed column is money out.
-  Banks that export the opposite convention are handled by mapping debit and credit columns.
-- **Protected categories are selectable by the user** in pickers like any other category; "the app
-  assigns them itself" means the app also assigns them in the cases in [FR-035](#fr-035), not that
-  the user is barred from choosing them.
-- **Reconciliation transaction** is an ordinary transaction (editable, deletable) with an
-  auto-filled description that names it as a reconciliation.
-- **Period presets** ([FR-050](#fr-050)) are: this month, last month, last 3 months, this year, and
-  custom start/end dates.
-- **Spending over time** plots one point per day when the period is within a single calendar month
-  and one point per calendar month otherwise.
-- **Uniqueness**: account names, mapping profile names, and category names within a side are unique.
-- **Historical data starts where the user starts.** The opening balance exists because a user will
-  never import an account's entire history. This assumption comes from the project vision document,
-  which is not yet in this repository.
-- **The five-minute target** ([SC-001](#sc-001)) also comes from the vision document.
-- **Later budget periods**: v1 fixes the budget period to the calendar month, but rollover and other
-  periods are planned ([Out of Scope](#out-of-scope)), so planning should treat "monthly" as one
-  period rule, not the only conceivable one.
-- **Predefined category lists** are chosen during planning; the spec requires only that both sides
-  ship non-empty and include the protected two ([FR-031](#fr-031)).
