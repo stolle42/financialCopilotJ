@@ -172,7 +172,9 @@ points here so implementation is not blocked:
 - **Protected categories are selectable** in every category picker like any other category
   ([FR-031](spec.md#fr-031) protects them from deletion, not from use).
 - **Manual-entry default account** for [FR-006](spec.md#fr-006): persisted in
-  `ManualEntryPreference.last_manual_entry_account`, updated on `POST/PATCH /transactions` only;
-  seeded to Cash before any manual entry.
+  `ManualEntryPreference.last_manual_entry_account`; updated only when
+  `ledger.services.create_transaction` / `update_transaction` run with
+  `update_default_account=True` (transaction API routes); import confirm and reconciliation pass
+  `False`; seeded to Cash before any manual entry.
 - **Predefined category lists** are a planning choice ([data-model.md](data-model.md#seed-data));
   the spec requires only that both sides have predefined lists plus the protected pair.

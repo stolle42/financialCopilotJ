@@ -43,7 +43,7 @@ last used ([FR-006](spec.md#fr-006)).
 
 | Field | Type | Rules |
 |-------|------|-------|
-| `last_manual_entry_account` | FK Account (PROTECT) | Updated when the user creates or edits a transaction through `POST/PATCH /transactions`. Not updated by import confirm or reconciliation. Seeded to the predefined "Cash" account. |
+| `last_manual_entry_account` | FK Account (PROTECT) | Updated only when `ledger.services.create_transaction` or `update_transaction` is called with `update_default_account=True` (the transaction HTTP routes). Import confirm and reconciliation pass `update_default_account=False`. Seeded to the predefined "Cash" account ([FR-006](spec.md#fr-006)). |
 
 ### Category
 
