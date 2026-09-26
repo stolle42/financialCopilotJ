@@ -64,7 +64,7 @@ repeated here.
 
 | # | Story | Where to click | Proves |
 |---|-------|----------------|--------|
-| 1 | [User Story 1](spec.md#user-story-1) | `/` quick-add form, then `/accounts` | Balances derive from transactions ([SC-005](spec.md#sc-005)); the form saves untouched ([SC-002](spec.md#sc-002)); a transfer is neutral ([SC-004](spec.md#sc-004)); first-run flow ([SC-006](spec.md#sc-006)). |
+| 1 | [User Story 1](spec.md#user-story-1) | `/` quick-add form, then `/accounts` | Balances per [FR-002](spec.md#fr-002) ([SC-005](spec.md#sc-005)); the form saves untouched ([SC-002](spec.md#sc-002)); transfers neutral to totals ([FR-012](spec.md#fr-012), [SC-004](spec.md#sc-004)); first-run flow ([SC-006](spec.md#sc-006)). |
 | 2 | [User Story 2](spec.md#user-story-2) | `/import` → upload a sample export with a new profile → review → confirm; upload the same file again | Pending rows do not touch balances ([FR-022](spec.md#fr-022)); duplicates are excluded by default ([SC-003](spec.md#sc-003)); parse errors and duplicate counts are low-prominence and expandable ([FR-028](spec.md#fr-028)); 5,000 rows review in time ([SC-010](spec.md#sc-010)). |
 | 3 | [User Story 3](spec.md#user-story-3) | `/insights`, change the period | Charts and budget progress for the period ([SC-001](spec.md#sc-001), [SC-009](spec.md#sc-009)); empty period renders empty. |
 | 4 | [User Story 4](spec.md#user-story-4) | `/budgets`, set a limit, add expenses past it, view `/insights` | Over-limit is visible ([SC-011](spec.md#sc-011)). |

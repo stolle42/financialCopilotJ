@@ -422,10 +422,10 @@ attempt to delete a protected one, and verify transactions and budgets respond a
   form.
 - <a id="sc-003"></a>**SC-003**: Re-importing a file that overlaps an already-confirmed range and accepting the review
   defaults adds zero transactions to the ledger.
-- <a id="sc-004"></a>**SC-004**: Recording any transfer leaves every spending total, income total, and budget progress
-  figure unchanged.
-- <a id="sc-005"></a>**SC-005**: At every moment, every displayed account balance equals the account's opening balance
-  plus the net of its transactions, recomputed independently from the transaction list.
+- <a id="sc-004"></a>**SC-004**: Confirmed when recording a transfer leaves every spending total, income total,
+  and budget progress figure unchanged ([FR-012](#fr-012)).
+- <a id="sc-005"></a>**SC-005**: Confirmed when every displayed account balance matches [FR-002](#fr-002),
+  recomputed independently from the transaction list.
 - <a id="sc-006"></a>**SC-006**: A new user records their first categorised expense within 2 minutes of first opening
   the app, without creating any account or category.
 - <a id="sc-009"></a>**SC-009**: Insights for a period containing 5,000 transactions renders within 2 seconds of

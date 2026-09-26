@@ -175,7 +175,7 @@ categories, progress and over-limit state in Insights for the most recent month 
 ### Tests for User Story 4 (write first, confirm they fail)
 
 - [ ] T059 [P] [US4] Domain tests `backend/tests/domain/test_budgets.py`: `period_containing(date)` is the calendar month; `most_recent_period_in(start, end)` picks the latest month overlapping the period ([Edge Cases](spec.md#edge-cases)); `progress(limit, spent)` reports `over_limit` exactly when `spent > limit` ([FR-041](spec.md#fr-041), [FR-042](spec.md#fr-042))
-- [ ] T060 [P] [US4] API tests `backend/tests/api/test_budgets.py` for [contracts → Budgets](contracts/api.md#budgets): PUT creates and updates; 409 for an income category and for either protected category ([FR-040](spec.md#fr-040)); DELETE removes; `GET /budgets?month=` returns `spent` from that month only, transfers excluded ([SC-004](spec.md#sc-004)), and a month with no expenses starts at `0.00` (US4 scenario 3)
+- [ ] T060 [P] [US4] API tests `backend/tests/api/test_budgets.py` for [contracts → Budgets](contracts/api.md#budgets): PUT creates and updates; 409 for an income category and for either protected category ([FR-040](spec.md#fr-040)); DELETE removes; `GET /budgets?month=` returns `spent` from that month only, transfers excluded ([FR-012](spec.md#fr-012), [SC-004](spec.md#sc-004)), and a month with no expenses starts at `0.00` (US4 scenario 3)
 - [ ] T061 [P] [US4] API test `backend/tests/api/test_insights_budgets.py`: `GET /insights` now includes `budgets.month` equal to the most recent calendar month in the period and `budgets.items` in the shape of `GET /budgets` (US4 scenario 6, [FR-051](spec.md#fr-051))
 
 ### Implementation for User Story 4
@@ -309,7 +309,7 @@ Task: "T027 frontend/src/features/accounts/AccountsPage.test.tsx"
 
 1. Phase 1 → Phase 2 → Phase 3
 2. **STOP and VALIDATE**: [quickstart scenario 1](quickstart.md#validation-scenarios) on a fresh
-   database; every balance equals opening balance plus net transactions ([SC-005](spec.md#sc-005))
+   database; every balance matches [FR-002](spec.md#fr-002) ([SC-005](spec.md#sc-005))
 3. This is a working cash book and the first thing worth showing
 
 ### Incremental Delivery
