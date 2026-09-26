@@ -65,7 +65,7 @@ Source: [constitution v1.0.1](../../.specify/memory/constitution.md).
 | IV. SOLID | Interfaces only at swapped boundaries. | PASS: the swapped boundaries are the database engine (Django ORM already abstracts it) and nothing else. | PASS: no repository layer, no service interfaces; Django apps split by reason to change (`ledger`, `imports`, `budgets`, `insights`). |
 | V. Clean Code | Names say what the value is; one thing per function. | N/A before code. | PASS by design: domain functions are named after the rule they implement ([data-model.md → Domain rules](data-model.md#domain-rules-pure-python-backenddomain)). Enforced at implementation. |
 | VI. Clean Architecture | Business rules import no framework, UI, or persistence. | PASS: planned `backend/domain/` package. | PASS: `domain/` is pure Python; a guard test fails on any `django` import ([R-9](research.md#r-9-testing)). Django models, Ninja schemas and React components depend inward. |
-| VII. TDD | Every behaviour change has a failing test first. | PASS: test stack chosen in [R-9](research.md#r-9-testing). | PASS: tasks will pair each FR with a domain or API test before implementation; quickstart lists the manual checks that remain ([quickstart.md](quickstart.md#validation-scenarios)). |
+| VII. TDD | Every behaviour change has a failing test first. | PASS: test stack chosen in [R-9](research.md#r-9-testing). | PASS: tasks pair each FR with a domain or API test before implementation; quickstart lists the manual checks that remain ([quickstart.md](quickstart.md#validation-scenarios)). |
 | Precedence (KISS until duplicated logic changes for the same reason) | | | Applied in III and IV above. |
 
 **Gate result**: PASS. No violations to justify. The hosting tension is decided in
@@ -85,7 +85,7 @@ specs/001-finance-tracker-v1/
 │   └── api.md           # Phase 1: endpoint and route contract (superseded by /api/openapi.json)
 ├── checklists/
 │   └── requirements.md  # From /speckit-specify
-└── tasks.md             # Phase 2 (/speckit-tasks), not created here
+└── tasks.md             # Phase 2 (/speckit-tasks)
 ```
 
 ### Source Code (repository root)
@@ -150,8 +150,9 @@ frontend/
 │   │   ├── import/                # upload, profiles, review with groups and low-prominence counts (US2)
 │   │   ├── budgets/               # limits (US4)
 │   │   └── insights/              # period picker, charts, budget progress (US3)
-│   └── lib/                       # formatters (money, date), period helpers shared by ≥ 2 features only
-└── tests/                         # Vitest; MSW handlers per resource
+│   ├── lib/                       # formatters (money, date), period helpers shared by ≥ 2 features only
+│   └── test/                      # Vitest setup, MSW server, shared render helpers (T006)
+│       └── handlers/              # MSW handlers per resource, imported from *.test.tsx under features/
 ```
 
 **Structure Decision**: Web application with a `backend/` and a `frontend/` directory at the
