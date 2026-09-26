@@ -54,9 +54,9 @@ only the conventions section and the endpoint index.
 | `GET /transactions/defaults` | → `{account_id, expense_category_id, income_category_id}` | [FR-006](../spec.md#fr-006), [Edge Cases](../spec.md#edge-cases) |
 
 `TransactionIn = {date, amount, description, kind, account_id, category_id?, destination_account_id?}`
-validated per the Transaction constraints in the data model. `/defaults` returns the manual-entry
-default account (or the most recently used one when no default exists) and each side's
-`uncategorised` id so the form opens saveable.
+validated per the Transaction constraints in the data model. `/defaults` returns the account most
+recently used for manual entry ([FR-006](../spec.md#fr-006)), or "Cash" before any manual entry,
+and each side's `uncategorised` id so the form opens saveable.
 
 ### Import
 

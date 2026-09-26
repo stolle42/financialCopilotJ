@@ -28,13 +28,22 @@ side.
 | `name` | text | Unique ([Edge Cases](spec.md#edge-cases)). |
 | `type` | `AccountType` | No behaviour depends on it ([FR-004](spec.md#fr-004)). |
 | `opening_balance` | decimal | What the account held before its earliest recorded transaction ([FR-001](spec.md#fr-001)). The severe warning on change is a UI concern; the API accepts the change. |
-| `is_manual_entry_default` | bool | True for exactly one account: the predefined "Cash" ([FR-006](spec.md#fr-006)). Enforced by a partial unique constraint (`is_manual_entry_default = true`). |
 
 Derived, never stored: `balance = opening_balance + Σ signed effect of transactions`
 ([FR-002](spec.md#fr-002)); the sign rule is `domain.ledger.signed_effect`.
 
 Deletion is not in v1 ([Out of Scope](spec.md#out-of-scope)); every foreign key to Account uses
 `PROTECT`.
+
+### ManualEntryPreference
+
+<a id="manualentrypreference"></a>
+Singleton row (fixed primary key `1`) for the single-user app. Persists which account manual entry
+last used ([FR-006](spec.md#fr-006)).
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `last_manual_entry_account` | FK Account (PROTECT) | Updated when the user creates or edits a transaction through `POST/PATCH /transactions`. Not updated by import confirm or reconciliation. Seeded to the predefined "Cash" account. |
 
 ### Category
 
@@ -141,6 +150,7 @@ group if there are at least two of them; everything else is presented ungrouped
 ```text
 Account 1───* Transaction (account)
 Account 1───* Transaction (destination_account, transfers only)
+ManualEntryPreference 1───1 Account (last_manual_entry_account)
 Category 1───* Transaction
 Category 1───1 Budget (expense, non-protected only)
 Account 1───* PendingBatch
@@ -184,8 +194,9 @@ No module here imports Django (Constitution Principle VI; guarded by a test, see
 <a id="seed-data"></a>
 ## Seed data (data migration, [research R-12](research.md#r-12-first-launch-data))
 
-**Account**: `Cash`, type `cash`, opening balance `0.00`, `is_manual_entry_default = true`
-([FR-006](spec.md#fr-006)).
+**Account**: `Cash`, type `cash`, opening balance `0.00` ([FR-006](spec.md#fr-006)).
+
+**ManualEntryPreference**: row `id = 1`, `last_manual_entry_account` → Cash ([FR-006](spec.md#fr-006)).
 
 **Expense categories**: Groceries, Eating out, Transport, Housing, Utilities, Health, Leisure,
 Shopping, Subscriptions, Travel, Gifts, plus protected `Uncategorised` and `Unaccounted`.

@@ -53,7 +53,7 @@ both balances equal opening balance plus the net of their transactions. Delivers
    without changing anything, **Then** an expense of 0.00 with no description is booked to "Cash"
    in "Uncategorised".
 9. **Given** the user's last manual entry was recorded to "Checking", **When** they open manual
-   entry again, **Then** the account is still "Cash".
+   entry again, **Then** the account is "Checking".
 10. **Given** "Checking" has an opening balance of 1,250.00, **When** the user changes the opening
     balance to 1,300.00, **Then** the app shows a severe warning that every
     balance this account has ever shown will change and asks for confirmation; **When** the user
@@ -286,9 +286,10 @@ attempt to delete a protected one, and verify transactions and budgets respond a
   "Unaccounted" when it is higher, and no transaction when they are equal.
 - <a id="fr-006"></a>**FR-006**: On first launch, system MUST create one account named "Cash", of
   type cash, with an opening balance of 0.00. It is an ordinary account ([FR-004](#fr-004)),
-  editable like any other, and it is the default account for manual entry. Once it gets deleted,
-  the default is the account most recently used for manual entry; since accounts cannot be deleted
-  in v1 ([Out of Scope](#out-of-scope)), this fallback is not reachable in v1.
+  editable like any other. The manual-entry form MUST default to the account most recently used for
+  a manual entry (create or edit through the transaction API). Before the user has made any manual
+  entry, that account MUST be "Cash". Import confirmation and reconciliation MUST NOT change this
+  default. Accounts cannot be deleted in v1 ([Out of Scope](#out-of-scope)).
 
 **Transactions**
 
@@ -396,8 +397,9 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 ### Key Entities
 
 - **Account**: Something the user holds money in. Has a name, a descriptive type, an opening
-  balance, and a computed balance. Cash is an ordinary account; one is predefined and is
-  the default for manual entry ([FR-006](#fr-006)).
+  balance, and a computed balance. Cash is an ordinary account; one is predefined on first launch
+  ([FR-006](#fr-006)). Manual entry defaults to the last account used for manual entry
+  ([FR-006](#fr-006)).
 - **Transaction**: One movement of money. Has a date, an amount of zero or more, an optional
   description, a kind (expense, income, transfer), and an account. An expense or income has one
   category from its side. A transfer has a destination account instead of a category.

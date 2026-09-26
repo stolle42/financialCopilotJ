@@ -40,7 +40,8 @@ Supabase ([R-7](research.md#r-7-serving-the-spa), [R-10](research.md#r-10-deploy
 **Project Type**: Web application (backend + frontend, single deployable)
 
 **Performance Goals**: [SC-009](spec.md#sc-009) insights for 5,000 transactions in ≤ 2 s;
-[SC-010](spec.md#sc-010) 5,000-row CSV parsed and shown in ≤ 5 s; [SC-002](spec.md#sc-002)
+[SC-010](spec.md#sc-010) 5,000-row CSV parsed into a reviewable pending batch in ≤ 10 s;
+[SC-002](spec.md#sc-002)
 untouched form saves in one click
 
 **Constraints**: [FR-061](spec.md#fr-061) no external connections while the spec stands;

@@ -3,9 +3,10 @@
 
 ### Session 2026-09-25
 
-- Q: Which account does manual entry default to when the user has no cash account? → A: One
-  always exists: the app ships with a predefined "Cash" account, and manual entry defaults to it.
-  If it no longer exists, default to the account most recently used for manual entry.
+- Q: Which account does manual entry default to? → A: The account most recently used for a manual
+  entry (create or edit via the transaction API). Before any manual entry, that is the seeded
+  "Cash" account (which always exists on first launch). Import and reconciliation do not update
+  this default.
 - Q: When the Insights period spans several calendar months, how is budget progress shown? → A:
   For the most recent calendar month in the period only.
 - Q: Which view does the app open on? → A: The transaction list, for now; may change later.
@@ -18,9 +19,10 @@
 - Q: Can a transfer be given a category? → A: No; when the kind is transfer, the form shows a
   destination account in place of the category.
 - Q: What does the manual-entry form hold when opened, and can it be saved as is? → A: Kind
-  expense, date today, amount 0.00, account "Cash", category expense "Uncategorised", description
-  empty. Saving unchanged books a 0.00 expense with no description to "Cash". Description is
-  optional; a zero amount is allowed.
+  expense, date today, amount 0.00, account the last one used for manual entry (seeded "Cash"
+  before any manual entry), category expense "Uncategorised", description empty. Saving unchanged
+  books a 0.00 expense with no description to the  last opened account. Description is optional; a zero amount
+  is allowed.
 - Q: How is an opening balance changed? → A: Only after a severe warning that the user confirms.
 - Q: Is reconciliation a way to enter a balance? → A: Yes; the user states the actual balance and
   the app books the difference as a transaction. What is forbidden is storing or editing the

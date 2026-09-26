@@ -37,7 +37,7 @@
   quantification in SC-007.
 - No clarification markers were used. The decisions with the least support in the input are
   recorded in the spec's Assumptions section and are the natural targets for `/speckit-clarify`:
-  the default account for manual entry when no cash account exists, budget progress over a
+  the default account for manual entry (last used, seeded to Cash before any manual entry), budget progress over a
   multi-month Insights period, and the landing view.
 - "CSV", "browser", and "360 pixels" appear in the spec. They are product boundaries stated by the
   feature owner (CSV is the import boundary; v1 is a browser app usable at small window size), not
