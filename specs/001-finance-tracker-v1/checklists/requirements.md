@@ -33,12 +33,11 @@
 
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`
 - Validation run 2026-09-25, iteration 1: all items pass. Two wording fixes were applied during
-  the run: FR-050 "presets" now points to a defined list in Assumptions; FR-060 now points to its
-  quantification in SC-007.
+  the run: FR-050 "presets" now points to a defined list in Assumptions.
 - No clarification markers were used. The decisions with the least support in the input are
   recorded in the spec's Assumptions section and are the natural targets for `/speckit-clarify`:
   the default account for manual entry (last used, seeded to Cash before any manual entry), budget progress over a
   multi-month Insights period, and the landing view.
-- "CSV", "browser", and "360 pixels" appear in the spec. They are product boundaries stated by the
-  feature owner (CSV is the import boundary; v1 is a browser app usable at small window size), not
+- "CSV" and "browser" appear in the spec. They are product boundaries stated by the
+  feature owner (CSV is the import boundary; v1 is a desktop browser app), not
   implementation choices.

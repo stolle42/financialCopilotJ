@@ -262,8 +262,6 @@ attempt to delete a protected one, and verify transactions and budgets respond a
   refused.
 - A very large expense "Unaccounted" share appears in Insights: it is shown at its true size; there
   is no option to hide or merge it.
-- The browser window is narrow: every flow in this spec is completable at small window size without
-  horizontal scrolling.
 
 ## Requirements *(mandatory)*
 
@@ -385,8 +383,6 @@ attempt to delete a protected one, and verify transactions and budgets respond a
 
 **Whole application**
 
-- <a id="fr-060"></a>**FR-060**: Every flow in this spec MUST be completable in a browser at small
-  window size without horizontal scrolling (quantified in [SC-007](#sc-007)).
 - <a id="fr-061"></a>**FR-061**: The application MUST NOT send any user data or usage information to any external
   party, and MUST NOT require a network connection for any v1 capability.
 - <a id="fr-062"></a>**FR-062**: The application MUST NOT initiate, schedule, or instruct any movement of real money.
@@ -432,8 +428,6 @@ attempt to delete a protected one, and verify transactions and budgets respond a
   plus the net of its transactions, recomputed independently from the transaction list.
 - <a id="sc-006"></a>**SC-006**: A new user records their first categorised expense within 2 minutes of first opening
   the app, without creating any account or category.
-- <a id="sc-007"></a>**SC-007**: Every flow in this spec is completable in a browser window 360 pixels wide without
-  horizontal scrolling.
 - <a id="sc-009"></a>**SC-009**: Insights for a period containing 5,000 transactions renders within 2 seconds of
   choosing the period.
 - <a id="sc-010"></a>**SC-010**: A 5,000-row CSV parses into a reviewable pending batch within 10 seconds.
@@ -459,8 +453,10 @@ Listed so that "should we add…?" has an answer that does not require a meeting
 - Linking an income category to an expense category so a refund offsets the category it came from.
 - Investment, asset, or net-worth tracking.
 - Tax reporting or accounting-standard exports.
-- Native mobile applications. Usable in a browser at a small window size is the whole v1 mobile
-  commitment ([FR-060](#fr-060)).
+- Native mobile applications.
+- Small-viewport responsive layout: completing every flow in a narrow browser window (for example
+  360 pixels wide) without horizontal scrolling. v1 targets a normal desktop browser; phone-sized
+  polish is later.
 - Recurring-transaction detection and forecasting.
 - Budget rollover, and budget periods other than monthly. Both are wanted later and will be
   user-selectable when they arrive.

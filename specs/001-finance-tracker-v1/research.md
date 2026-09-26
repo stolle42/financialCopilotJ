@@ -127,8 +127,9 @@ identity system); local only, never hosted (ignores the explicit stack request).
     test asserts that no module under `backend/domain/` imports `django`, enforcing Constitution
     Principle VI.
   - Frontend: Vitest + Testing Library; MSW mocks the API.
-  - No end-to-end runner in v1. [SC-007](spec.md#sc-007) (360 px) and the timing criteria are
-    checked by hand following [quickstart.md](quickstart.md).
+  - No end-to-end runner in v1. Performance success criteria ([SC-009](../spec.md#sc-009),
+    [SC-010](../spec.md#sc-010)) and the quickstart scenarios are checked by hand following
+    [quickstart.md](quickstart.md).
 - **Alternatives**: Playwright for the Given/When/Then scenarios; add it when the manual pass
   becomes the bottleneck.
 

@@ -33,9 +33,9 @@ is set ([R-4](research.md#r-4-database)). No filesystem state besides the SQLite
 **Testing**: pytest + pytest-django (domain tests without Django, API tests on in-memory SQLite,
 import-guard test); Vitest + Testing Library + MSW ([R-9](research.md#r-9-testing))
 
-**Target Platform**: Modern browser (desktop and 360 px mobile, [SC-007](spec.md#sc-007))
-against a Django process on the user's machine; deployable unchanged to Vercel Fluid compute +
-Supabase ([R-7](research.md#r-7-serving-the-spa), [R-10](research.md#r-10-deployment-deferred-see-r-1))
+**Target Platform**: Modern desktop browser against a Django process on the user's machine;
+deployable unchanged to Vercel Fluid compute + Supabase ([R-7](research.md#r-7-serving-the-spa),
+[R-10](research.md#r-10-deployment-deferred-see-r-1))
 
 **Project Type**: Web application (backend + frontend, single deployable)
 

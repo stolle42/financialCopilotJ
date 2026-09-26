@@ -73,7 +73,6 @@ repeated here.
 
 Also check, once per release:
 
-- Resize the browser to 360 px and walk every route ([SC-007](spec.md#sc-007)).
 - With the network tab open, confirm no request leaves `localhost` while running scenarios 1–6
   ([FR-061](spec.md#fr-061)); this check changes when a hosted release is chosen
   ([research R-1](research.md#r-1-hosting-model-versus-the-spec)).

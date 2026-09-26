@@ -105,4 +105,4 @@ A period with no data returns empty arrays and zero totals ([Edge Cases](../spec
 | `/budgets` | Limits per expense category | [User Story 4](../spec.md#user-story-4) |
 | `/insights` | Period picker, charts, budget progress | [User Story 3](../spec.md#user-story-3) |
 
-All routes work at 360 px wide ([SC-007](../spec.md#sc-007)).
+v1 targets a desktop browser; small-viewport layout is [Out of Scope](../spec.md#out-of-scope).
