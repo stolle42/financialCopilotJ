@@ -31,6 +31,7 @@ class ParsedCsvRow:
     description: str
     counterparty: str | None
     parse_error: str | None = None
+    proposed_kind: str | None = None
 
 
 def detect_delimiter(header_line: str) -> str:
@@ -114,7 +115,31 @@ def _parse_record(
         )
 
     try:
-        amount = _parse_amount(record, profile)
+        signed: Decimal | None = None
+        debit_val: Decimal | None = None
+        credit_val: Decimal | None = None
+        if profile.amount_column:
+            raw_amount = (record.get(profile.amount_column) or "").strip()
+            if raw_amount == "":
+                raise InvalidOperation("missing amount")
+            signed = _parse_decimal(raw_amount, profile.decimal_separator)
+            amount = abs(signed)
+        else:
+            debit_raw = (record.get(profile.debit_column or "") or "").strip()
+            credit_raw = (record.get(profile.credit_column or "") or "").strip()
+            if debit_raw == "" and credit_raw == "":
+                raise InvalidOperation("missing amount")
+            if debit_raw:
+                debit_val = _parse_decimal(debit_raw, profile.decimal_separator)
+                amount = abs(debit_val)
+            else:
+                credit_val = _parse_decimal(credit_raw, profile.decimal_separator)
+                amount = abs(credit_val)
+        proposed = propose_kind(
+            signed_amount=signed,
+            debit=debit_val,
+            credit=credit_val,
+        )
     except InvalidOperation:
         return ParsedCsvRow(
             row_number=row_number,
@@ -130,23 +155,8 @@ def _parse_record(
         row_number=row_number,
         raw_line=raw_line,
         date=parsed_date,
-        amount=abs(amount),
+        amount=amount,
         description=description,
         counterparty=counterparty,
+        proposed_kind=proposed,
     )
-
-
-def _parse_amount(record: dict[str, str | None], profile: CsvMappingProfile) -> Decimal:
-    if profile.amount_column:
-        raw_amount = (record.get(profile.amount_column) or "").strip()
-        if raw_amount == "":
-            raise InvalidOperation("missing amount")
-        return _parse_decimal(raw_amount, profile.decimal_separator)
-
-    debit_raw = (record.get(profile.debit_column or "") or "").strip()
-    credit_raw = (record.get(profile.credit_column or "") or "").strip()
-    if debit_raw == "" and credit_raw == "":
-        raise InvalidOperation("missing amount")
-    if debit_raw:
-        return _parse_decimal(debit_raw, profile.decimal_separator)
-    return _parse_decimal(credit_raw, profile.decimal_separator)
