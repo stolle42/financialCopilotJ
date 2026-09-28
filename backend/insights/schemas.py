@@ -2,6 +2,7 @@ from datetime import date
 
 from ninja import Schema
 
+from budgets.schemas import BudgetsSectionOut
 from ledger.schemas import CategoryOut
 
 
@@ -20,3 +21,4 @@ class InsightsOut(Schema):
     spending_over_time: list[SpendingBucketOut]
     expense_breakdown: list[BreakdownItemOut]
     income_breakdown: list[BreakdownItemOut]
+    budgets: BudgetsSectionOut

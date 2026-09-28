@@ -90,7 +90,7 @@ def test_insights_counts_only_transactions_in_period_excludes_transfers(api_clie
     response = api_client.get("/api/insights", {"from": "2026-03-01", "to": "2026-03-31"})
     assert response.status_code == 200
     data = response.json()
-    assert "budgets" not in data
+    assert "budgets" in data
     assert sum(float(row["amount"]) for row in data["spending_over_time"]) == 15.0
     names = {row["category"]["name"] for row in data["expense_breakdown"]}
     assert "Groceries" in names

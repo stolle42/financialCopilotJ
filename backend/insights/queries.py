@@ -6,6 +6,8 @@ from decimal import Decimal
 from django.db.models import Sum
 from django.db.models.functions import TruncDay, TruncMonth
 
+from budgets.queries import progress_for_month
+from domain import budgets as domain_budgets
 from domain import insights as domain_insights
 from ledger.models import Category, Kind, Transaction
 
@@ -92,6 +94,9 @@ def insights_payload(*, start: date, end: date) -> dict:
     expense_breakdown = domain_insights.breakdown(_category_rows(side="expense", start=start, end=end))
     income_breakdown = domain_insights.breakdown(_category_rows(side="income", start=start, end=end))
 
+    budget_month = domain_budgets.most_recent_period_in(start, end)
+    budget_items = progress_for_month(budget_month)
+
     return {
         "spending_over_time": [
             {"bucket": item["bucket"], "amount": _decimal_string(item["amount"])}
@@ -113,4 +118,5 @@ def insights_payload(*, start: date, end: date) -> dict:
             }
             for item in income_breakdown
         ],
+        "budgets": {"month": budget_month, "items": budget_items},
     }
