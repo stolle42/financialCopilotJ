@@ -1,5 +1,7 @@
 import { http, HttpResponse } from 'msw'
 
+import { budgetsState } from '@/test/handlers/budgets'
+
 export const ledgerState = {
   accounts: [
     {
@@ -26,6 +28,13 @@ export const ledgerState = {
       protected_role: null,
     },
     {
+      id: 12,
+      name: 'Unaccounted',
+      colour: '#94a3b8',
+      side: 'expense',
+      protected_role: 'unaccounted',
+    },
+    {
       id: 20,
       name: 'Uncategorised',
       colour: '#94a3b8',
@@ -39,6 +48,13 @@ export const ledgerState = {
       side: 'income',
       protected_role: null,
     },
+    {
+      id: 22,
+      name: 'Unaccounted',
+      colour: '#94a3b8',
+      side: 'income',
+      protected_role: 'unaccounted',
+    },
   ],
   transactions: [] as Array<Record<string, unknown>>,
   defaults: {
@@ -47,8 +63,54 @@ export const ledgerState = {
     income_category_id: 20,
   },
   nextAccountId: 2,
+  nextCategoryId: 30,
   nextTxId: 1,
 }
+
+const defaultCategories = () => [
+  {
+    id: 10,
+    name: 'Uncategorised',
+    colour: '#94a3b8',
+    side: 'expense',
+    protected_role: 'uncategorised',
+  },
+  {
+    id: 11,
+    name: 'Groceries',
+    colour: 'hsl(var(--chart-1))',
+    side: 'expense',
+    protected_role: null,
+  },
+  {
+    id: 12,
+    name: 'Unaccounted',
+    colour: '#94a3b8',
+    side: 'expense',
+    protected_role: 'unaccounted',
+  },
+  {
+    id: 20,
+    name: 'Uncategorised',
+    colour: '#94a3b8',
+    side: 'income',
+    protected_role: 'uncategorised',
+  },
+  {
+    id: 21,
+    name: 'Salary',
+    colour: 'hsl(var(--chart-1))',
+    side: 'income',
+    protected_role: null,
+  },
+  {
+    id: 22,
+    name: 'Unaccounted',
+    colour: '#94a3b8',
+    side: 'income',
+    protected_role: 'unaccounted',
+  },
+]
 
 export function resetLedgerState() {
   ledgerState.accounts = [
@@ -60,6 +122,7 @@ export function resetLedgerState() {
       balance: '0.00',
     },
   ]
+  ledgerState.categories = defaultCategories()
   ledgerState.transactions = []
   ledgerState.defaults = {
     account_id: 1,
@@ -67,6 +130,7 @@ export function resetLedgerState() {
     income_category_id: 20,
   }
   ledgerState.nextAccountId = 2
+  ledgerState.nextCategoryId = 30
   ledgerState.nextTxId = 1
 }
 
@@ -145,6 +209,76 @@ export const ledgerHandlers = [
   http.get(`${API}/categories`, () =>
     HttpResponse.json(ledgerState.categories),
   ),
+  http.post(`${API}/categories`, async ({ request }) => {
+    const body = (await request.json()) as {
+      name: string
+      colour: string
+      side: string
+    }
+    const duplicate = ledgerState.categories.some(
+      (c) => c.side === body.side && c.name === body.name,
+    )
+    if (duplicate) {
+      return HttpResponse.json(
+        { detail: 'category name must be unique within this side' },
+        { status: 400 },
+      )
+    }
+    const category = {
+      id: ledgerState.nextCategoryId++,
+      name: body.name,
+      colour: body.colour,
+      side: body.side,
+      protected_role: null,
+    }
+    ledgerState.categories.push(category)
+    return HttpResponse.json(category)
+  }),
+  http.patch(`${API}/categories/:id`, async ({ params, request }) => {
+    const id = Number(params.id)
+    const body = (await request.json()) as { name?: string; colour?: string }
+    const category = ledgerState.categories.find((c) => c.id === id)
+    if (!category) {
+      return HttpResponse.json({ detail: 'not found' }, { status: 404 })
+    }
+    const nextName = body.name ?? category.name
+    const clash = ledgerState.categories.some(
+      (c) =>
+        c.id !== id && c.side === category.side && c.name === nextName,
+    )
+    if (clash) {
+      return HttpResponse.json(
+        { detail: 'category name must be unique within this side' },
+        { status: 400 },
+      )
+    }
+    Object.assign(category, body)
+    return HttpResponse.json(category)
+  }),
+  http.delete(`${API}/categories/:id`, ({ params }) => {
+    const id = Number(params.id)
+    const category = ledgerState.categories.find((c) => c.id === id)
+    if (!category) {
+      return HttpResponse.json({ detail: 'not found' }, { status: 404 })
+    }
+    if (category.protected_role) {
+      return HttpResponse.json(
+        { detail: 'protected categories cannot be deleted' },
+        { status: 409 },
+      )
+    }
+    const uncat = ledgerState.categories.find(
+      (c) => c.side === category.side && c.protected_role === 'uncategorised',
+    )
+    for (const tx of ledgerState.transactions) {
+      if (tx.category_id === id) {
+        tx.category_id = uncat?.id
+      }
+    }
+    budgetsState.limits.delete(id)
+    ledgerState.categories = ledgerState.categories.filter((c) => c.id !== id)
+    return new HttpResponse(null, { status: 204 })
+  }),
   http.get(`${API}/transactions/defaults`, () =>
     HttpResponse.json(ledgerState.defaults),
   ),

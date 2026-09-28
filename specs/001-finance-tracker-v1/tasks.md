@@ -227,14 +227,14 @@ protected pair undeletable.
 
 ### Tests for User Story 6 (write first, confirm they fail)
 
-- [ ] T078 [US6] API tests `backend/tests/api/test_categories.py` for the mutations in [contracts → Categories](contracts/api.md#categories): create on either side; same name on both sides succeeds, second on one side → 400 (US6 scenario 5, [FR-032](spec.md#fr-032)); PATCH name/colour works for protected categories too ([FR-033](spec.md#fr-033)); DELETE protected → 409 with an explanation; DELETE a category with transactions, pending rows, and a budget moves the transactions and rows to that side's Uncategorised and removes the budget ([FR-034](spec.md#fr-034), [FR-035](spec.md#fr-035), US6 scenario 3)
+- [x] T078 [US6] API tests `backend/tests/api/test_categories.py` for the mutations in [contracts → Categories](contracts/api.md#categories): create on either side; same name on both sides succeeds, second on one side → 400 (US6 scenario 5, [FR-032](spec.md#fr-032)); PATCH name/colour works for protected categories too ([FR-033](spec.md#fr-033)); DELETE protected → 409 with an explanation; DELETE a category with transactions, pending rows, and a budget moves the transactions and rows to that side's Uncategorised and removes the budget ([FR-034](spec.md#fr-034), [FR-035](spec.md#fr-035), US6 scenario 3)
 
 ### Implementation for User Story 6
 
-- [ ] T079 [US6] Add `create_category`, `update_category`, `delete_category` (reassign `transaction_set` and `pendingrow_set` inside one database transaction, then delete) to `backend/ledger/services.py`; add POST/PATCH/DELETE to `backend/ledger/api.py`/`schemas.py`; T078 passes
-- [ ] T080 [US6] Regenerate `frontend/openapi.json` and `frontend/src/api/schema.d.ts`
-- [ ] T081 [US6] Frontend test `frontend/src/features/categories/CategoriesPage.test.tsx` (handlers extend `frontend/src/test/handlers/ledger.ts`): two tabs (expense, income) never mixed ([FR-030](spec.md#fr-030)); create, rename, recolour; delete asks for confirmation and states that transactions move to Uncategorised; protected categories show no delete control and a tooltip/explanation instead (US6 scenario 4); duplicate name shows the API error
-- [ ] T082 [US6] Implement `frontend/src/features/categories/CategoriesPage.tsx`, `CategoryForm.tsx`, mutations in `frontend/src/api/queries/categories.ts` (invalidate `categories`, `transactions`, `budgets`, `insights`); wire `/categories`; T081 passes
+- [x] T079 [US6] Add `create_category`, `update_category`, `delete_category` (reassign `transaction_set` and `pendingrow_set` inside one database transaction, then delete) to `backend/ledger/services.py`; add POST/PATCH/DELETE to `backend/ledger/api.py`/`schemas.py`; T078 passes
+- [x] T080 [US6] Regenerate `frontend/openapi.json` and `frontend/src/api/schema.d.ts`
+- [x] T081 [US6] Frontend test `frontend/src/features/categories/CategoriesPage.test.tsx` (handlers extend `frontend/src/test/handlers/ledger.ts`): two tabs (expense, income) never mixed ([FR-030](spec.md#fr-030)); create, rename, recolour; delete asks for confirmation and states that transactions move to Uncategorised; protected categories show no delete control and a tooltip/explanation instead (US6 scenario 4); duplicate name shows the API error
+- [x] T082 [US6] Implement `frontend/src/features/categories/CategoriesPage.tsx`, `CategoryForm.tsx`, mutations in `frontend/src/api/queries/categories.ts` (invalidate `categories`, `transactions`, `budgets`, `insights`); wire `/categories`; T081 passes
 
 **Checkpoint**: Run [quickstart scenario 6](quickstart.md#validation-scenarios). Commit.
 

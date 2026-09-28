@@ -100,11 +100,30 @@ export interface paths {
         /** List Categories */
         get: operations["ledger_api_list_categories"];
         put?: never;
-        post?: never;
+        /** Create Category Route */
+        post: operations["ledger_api_create_category_route"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/categories/{category_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Category Route */
+        delete: operations["ledger_api_delete_category_route"];
+        options?: never;
+        head?: never;
+        /** Patch Category */
+        patch: operations["ledger_api_patch_category"];
         trace?: never;
     };
     "/api/transactions/defaults": {
@@ -401,6 +420,25 @@ export interface components {
             side: string;
             /** Protected Role */
             protected_role: string | null;
+        };
+        /** CategoryIn */
+        CategoryIn: {
+            /** Name */
+            name: string;
+            /** Colour */
+            colour: string;
+            /**
+             * Side
+             * @enum {string}
+             */
+            side: "expense" | "income";
+        };
+        /** CategoryPatchIn */
+        CategoryPatchIn: {
+            /** Name */
+            name?: string | null;
+            /** Colour */
+            colour?: string | null;
         };
         /** ManualEntryDefaultsOut */
         ManualEntryDefaultsOut: {
@@ -845,6 +883,76 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CategoryOut"][];
+                };
+            };
+        };
+    };
+    ledger_api_create_category_route: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CategoryIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryOut"];
+                };
+            };
+        };
+    };
+    ledger_api_delete_category_route: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ledger_api_patch_category: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CategoryPatchIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryOut"];
                 };
             };
         };
