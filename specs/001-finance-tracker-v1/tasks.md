@@ -175,20 +175,20 @@ categories, progress and over-limit state in Insights for the most recent month 
 ### Tests for User Story 4 (write first, confirm they fail)
 
 - [x] T059 [P] [US4] Domain tests `backend/tests/domain/test_budgets.py`: `period_containing(date)` is the calendar month; `most_recent_period_in(start, end)` picks the latest month overlapping the period ([Edge Cases](spec.md#edge-cases)); `progress(limit, spent)` reports `over_limit` exactly when `spent > limit` ([FR-041](spec.md#fr-041), [FR-042](spec.md#fr-042))
-- [ ] T060 [P] [US4] API tests `backend/tests/api/test_budgets.py` for [contracts → Budgets](contracts/api.md#budgets): PUT creates and updates; 409 for an income category and for either protected category ([FR-040](spec.md#fr-040)); DELETE removes; `GET /budgets?month=` returns `spent` from that month only, transfers excluded ([FR-012](spec.md#fr-012), [SC-004](spec.md#sc-004)), and a month with no expenses starts at `0.00` (US4 scenario 3)
-- [ ] T061 [P] [US4] API test `backend/tests/api/test_insights_budgets.py`: `GET /insights` now includes `budgets.month` equal to the most recent calendar month in the period and `budgets.items` in the shape of `GET /budgets` (US4 scenario 6, [FR-051](spec.md#fr-051))
+- [x] T060 [P] [US4] API tests `backend/tests/api/test_budgets.py` for [contracts → Budgets](contracts/api.md#budgets): PUT creates and updates; 409 for an income category and for either protected category ([FR-040](spec.md#fr-040)); DELETE removes; `GET /budgets?month=` returns `spent` from that month only, transfers excluded ([FR-012](spec.md#fr-012), [SC-004](spec.md#sc-004)), and a month with no expenses starts at `0.00` (US4 scenario 3)
+- [x] T061 [P] [US4] API test `backend/tests/api/test_insights_budgets.py`: `GET /insights` now includes `budgets.month` equal to the most recent calendar month in the period and `budgets.items` in the shape of `GET /budgets` (US4 scenario 6, [FR-051](spec.md#fr-051))
 
 ### Implementation for User Story 4
 
-- [ ] T062 [US4] Implement `backend/domain/budgets.py` until T059 passes
-- [ ] T063 [US4] Create `Budget` in `backend/budgets/models.py` per [data-model → Budget](data-model.md#budget) (one-to-one, `monthly_limit > 0` check, `CASCADE` from category); migration `backend/budgets/migrations/0001_initial.py`
-- [ ] T064 [US4] Implement `backend/budgets/queries.py` (`progress_for_month(month)` joining budgets with that month's expense sums), `backend/budgets/schemas.py`, `backend/budgets/api.py` with the side/protected guard; register; T060 passes
-- [ ] T065 [US4] Extend `backend/insights/api.py` and `backend/insights/schemas.py` with the `budgets` section using `budgets.queries.progress_for_month` and `domain.budgets.most_recent_period_in`; T061 passes
-- [ ] T066 [US4] Regenerate `frontend/openapi.json` and `frontend/src/api/schema.d.ts`
-- [ ] T067 [P] [US4] Frontend tests `frontend/src/features/budgets/BudgetsPage.test.tsx` (handlers in `frontend/src/test/handlers/budgets.ts`): only non-protected expense categories are listed as budgetable (US4 scenario 4); set, change, remove call PUT/DELETE and refetch
-- [ ] T068 [P] [US4] Frontend tests `frontend/src/features/insights/BudgetProgress.test.tsx`: heading shows the month label from the response; each item renders a progress bar; over-limit items carry a distinct colour class and an accessible status text so they are identifiable without reading the number ([SC-011](spec.md#sc-011))
-- [ ] T069 [US4] Implement `frontend/src/api/queries/budgets.ts` (mutations invalidate `budgets` and `insights`), `frontend/src/features/budgets/BudgetsPage.tsx`, `BudgetLimitForm.tsx`; wire `/budgets`; T067 passes
-- [ ] T070 [US4] Implement `frontend/src/features/insights/BudgetProgress.tsx` and render it in `InsightsPage.tsx`; T068 passes
+- [x] T062 [US4] Implement `backend/domain/budgets.py` until T059 passes
+- [x] T063 [US4] Create `Budget` in `backend/budgets/models.py` per [data-model → Budget](data-model.md#budget) (one-to-one, `monthly_limit > 0` check, `CASCADE` from category); migration `backend/budgets/migrations/0001_initial.py`
+- [x] T064 [US4] Implement `backend/budgets/queries.py` (`progress_for_month(month)` joining budgets with that month's expense sums), `backend/budgets/schemas.py`, `backend/budgets/api.py` with the side/protected guard; register; T060 passes
+- [x] T065 [US4] Extend `backend/insights/api.py` and `backend/insights/schemas.py` with the `budgets` section using `budgets.queries.progress_for_month` and `domain.budgets.most_recent_period_in`; T061 passes
+- [x] T066 [US4] Regenerate `frontend/openapi.json` and `frontend/src/api/schema.d.ts`
+- [x] T067 [P] [US4] Frontend tests `frontend/src/features/budgets/BudgetsPage.test.tsx` (handlers in `frontend/src/test/handlers/budgets.ts`): only non-protected expense categories are listed as budgetable (US4 scenario 4); set, change, remove call PUT/DELETE and refetch
+- [x] T068 [P] [US4] Frontend tests `frontend/src/features/insights/BudgetProgress.test.tsx`: heading shows the month label from the response; each item renders a progress bar; over-limit items carry a distinct colour class and an accessible status text so they are identifiable without reading the number ([SC-011](spec.md#sc-011))
+- [x] T069 [US4] Implement `frontend/src/api/queries/budgets.ts` (mutations invalidate `budgets` and `insights`), `frontend/src/features/budgets/BudgetsPage.tsx`, `BudgetLimitForm.tsx`; wire `/budgets`; T067 passes
+- [x] T070 [US4] Implement `frontend/src/features/insights/BudgetProgress.tsx` and render it in `InsightsPage.tsx`; T068 passes
 
 **Checkpoint**: Run [quickstart scenario 4](quickstart.md#validation-scenarios). Commit.
 
