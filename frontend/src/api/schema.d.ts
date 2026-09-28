@@ -143,6 +143,112 @@ export interface paths {
         patch: operations["ledger_api_patch_transaction"];
         trace?: never;
     };
+    "/api/import/profiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Profiles */
+        get: operations["imports_api_list_profiles"];
+        put?: never;
+        /** Create Profile */
+        post: operations["imports_api_create_profile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/import/profiles/{profile_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Profile */
+        delete: operations["imports_api_delete_profile"];
+        options?: never;
+        head?: never;
+        /** Patch Profile */
+        patch: operations["imports_api_patch_profile"];
+        trace?: never;
+    };
+    "/api/import/batches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Batches */
+        get: operations["imports_api_list_batches"];
+        put?: never;
+        /** Upload Batch */
+        post: operations["imports_api_upload_batch"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/import/batches/{batch_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Batch */
+        get: operations["imports_api_get_batch"];
+        put?: never;
+        post?: never;
+        /** Discard */
+        delete: operations["imports_api_discard"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/import/batches/{batch_id}/rows": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Patch Batch Rows */
+        patch: operations["imports_api_patch_batch_rows"];
+        trace?: never;
+    };
+    "/api/import/batches/{batch_id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirm */
+        post: operations["imports_api_confirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -267,6 +373,184 @@ export interface components {
             category_id?: number | null;
             /** Destination Account Id */
             destination_account_id?: number | null;
+        };
+        /** MappingProfileOut */
+        MappingProfileOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Date Column */
+            date_column: string;
+            /** Amount Column */
+            amount_column: string | null;
+            /** Debit Column */
+            debit_column: string | null;
+            /** Credit Column */
+            credit_column: string | null;
+            /** Description Column */
+            description_column: string;
+            /** Counterparty Column */
+            counterparty_column: string | null;
+            /** Date Format */
+            date_format: string;
+            /** Decimal Separator */
+            decimal_separator: string;
+            /** Encoding */
+            encoding: string;
+        };
+        /** MappingProfileIn */
+        MappingProfileIn: {
+            /** Name */
+            name: string;
+            /** Date Column */
+            date_column: string;
+            /** Amount Column */
+            amount_column?: string | null;
+            /** Debit Column */
+            debit_column?: string | null;
+            /** Credit Column */
+            credit_column?: string | null;
+            /** Description Column */
+            description_column: string;
+            /** Counterparty Column */
+            counterparty_column?: string | null;
+            /** Date Format */
+            date_format: string;
+            /** Decimal Separator */
+            decimal_separator: string;
+            /**
+             * Encoding
+             * @default utf-8
+             */
+            encoding: string;
+        };
+        /** MappingProfilePatchIn */
+        MappingProfilePatchIn: {
+            /** Name */
+            name?: string | null;
+            /** Date Column */
+            date_column?: string | null;
+            /** Amount Column */
+            amount_column?: string | null;
+            /** Debit Column */
+            debit_column?: string | null;
+            /** Credit Column */
+            credit_column?: string | null;
+            /** Description Column */
+            description_column?: string | null;
+            /** Counterparty Column */
+            counterparty_column?: string | null;
+            /** Date Format */
+            date_format?: string | null;
+            /** Decimal Separator */
+            decimal_separator?: string | null;
+            /** Encoding */
+            encoding?: string | null;
+        };
+        /** PendingBatchDetailOut */
+        PendingBatchDetailOut: {
+            /** Id */
+            id: number;
+            /** Account Id */
+            account_id: number;
+            /** Profile Id */
+            profile_id: number;
+            /** Source Filename */
+            source_filename: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Row Count */
+            row_count: number;
+            /** Unparsable Count */
+            unparsable_count: number;
+            /** Duplicate Count */
+            duplicate_count: number;
+            /** Groups */
+            groups: components["schemas"]["VendorGroupOut"][];
+            /** Ungrouped Rows */
+            ungrouped_rows: components["schemas"]["PendingRowOut"][];
+            /** Unparsable Rows */
+            unparsable_rows: components["schemas"]["PendingRowOut"][];
+        };
+        /** PendingRowOut */
+        PendingRowOut: {
+            /** Id */
+            id: number;
+            /** Row Number */
+            row_number: number;
+            /** Raw Line */
+            raw_line: string;
+            /** Parse Error */
+            parse_error: string | null;
+            /** Date */
+            date: string | null;
+            /** Amount */
+            amount?: string | null;
+            /** Description */
+            description: string;
+            /** Counterparty */
+            counterparty: string | null;
+            /** Kind */
+            kind: string;
+            /** Category Id */
+            category_id: number | null;
+            /** Destination Account Id */
+            destination_account_id: number | null;
+            /** Is Duplicate */
+            is_duplicate: boolean;
+            /** Include */
+            include: boolean;
+        };
+        /** VendorGroupOut */
+        VendorGroupOut: {
+            /** Counterparty */
+            counterparty: string;
+            /** Rows */
+            rows: components["schemas"]["PendingRowOut"][];
+        };
+        /** PendingBatchSummaryOut */
+        PendingBatchSummaryOut: {
+            /** Id */
+            id: number;
+            /** Account Id */
+            account_id: number;
+            /** Profile Id */
+            profile_id: number;
+            /** Source Filename */
+            source_filename: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Row Count */
+            row_count: number;
+            /** Unparsable Count */
+            unparsable_count: number;
+            /** Duplicate Count */
+            duplicate_count: number;
+        };
+        /** PendingRowPatchIn */
+        PendingRowPatchIn: {
+            /** Row Id */
+            row_id: number;
+            /** Category Id */
+            category_id?: number | null;
+            /** Kind */
+            kind?: string | null;
+            /** Destination Account Id */
+            destination_account_id?: number | null;
+            /** Include */
+            include?: boolean | null;
+        };
+        /** ConfirmOut */
+        ConfirmOut: {
+            /** Created */
+            created: number;
         };
     };
     responses: never;
@@ -516,6 +800,240 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TransactionOut"];
+                };
+            };
+        };
+    };
+    imports_api_list_profiles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MappingProfileOut"][];
+                };
+            };
+        };
+    };
+    imports_api_create_profile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MappingProfileIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MappingProfileOut"];
+                };
+            };
+        };
+    };
+    imports_api_delete_profile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                profile_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    imports_api_patch_profile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                profile_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MappingProfilePatchIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MappingProfileOut"];
+                };
+            };
+        };
+    };
+    imports_api_list_batches: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingBatchSummaryOut"][];
+                };
+            };
+        };
+    };
+    imports_api_upload_batch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Account Id */
+                    account_id: number;
+                    /** Profile Id */
+                    profile_id: number;
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingBatchDetailOut"];
+                };
+            };
+        };
+    };
+    imports_api_get_batch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batch_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingBatchDetailOut"];
+                };
+            };
+        };
+    };
+    imports_api_discard: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batch_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    imports_api_patch_batch_rows: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batch_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PendingRowPatchIn"][];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingBatchDetailOut"];
+                };
+            };
+        };
+    };
+    imports_api_confirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batch_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConfirmOut"];
                 };
             };
         };
