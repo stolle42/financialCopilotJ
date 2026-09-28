@@ -44,6 +44,10 @@ which is what makes Principle VII affordable.
 For a behavior change: write a failing test, then the minimum code that passes, then refactor.
 Production behavior MUST NOT be added without a test that fails if that behavior breaks.
 
+### IX. User experience
+
+The app should feel modern and easy to use. Error messages should be clear and understandable.
+
 ## Precedence Between Code Principles
 
 When Principles II–VII conflict, KISS (II) wins until the same logic exists in two places and
