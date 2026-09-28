@@ -38,10 +38,237 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/accounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Accounts */
+        get: operations["ledger_api_list_accounts"];
+        put?: never;
+        /** Create Account */
+        post: operations["ledger_api_create_account"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/accounts/{account_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Patch Account */
+        patch: operations["ledger_api_patch_account"];
+        trace?: never;
+    };
+    "/api/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Categories */
+        get: operations["ledger_api_list_categories"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/transactions/defaults": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Transaction Defaults */
+        get: operations["ledger_api_transaction_defaults"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/transactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Transactions */
+        get: operations["ledger_api_list_transactions"];
+        put?: never;
+        /** Create Transaction Route */
+        post: operations["ledger_api_create_transaction_route"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/transactions/{transaction_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Transaction */
+        delete: operations["ledger_api_delete_transaction"];
+        options?: never;
+        head?: never;
+        /** Patch Transaction */
+        patch: operations["ledger_api_patch_transaction"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: never;
+    schemas: {
+        /** AccountWithBalanceOut */
+        AccountWithBalanceOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Type */
+            type: string;
+            /** Opening Balance */
+            opening_balance: string;
+            /** Balance */
+            balance: string;
+        };
+        /** AccountIn */
+        AccountIn: {
+            /** Name */
+            name: string;
+            /** Type */
+            type: string;
+            /**
+             * Opening Balance
+             * @default 0.00
+             */
+            opening_balance: string;
+        };
+        /** AccountPatchIn */
+        AccountPatchIn: {
+            /** Name */
+            name?: string | null;
+            /** Type */
+            type?: string | null;
+            /** Opening Balance */
+            opening_balance?: string | null;
+        };
+        /** CategoryOut */
+        CategoryOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Colour */
+            colour: string;
+            /** Side */
+            side: string;
+            /** Protected Role */
+            protected_role: string | null;
+        };
+        /** ManualEntryDefaultsOut */
+        ManualEntryDefaultsOut: {
+            /** Account Id */
+            account_id: number;
+            /** Expense Category Id */
+            expense_category_id: number;
+            /** Income Category Id */
+            income_category_id: number;
+        };
+        /** TransactionOut */
+        TransactionOut: {
+            /** Id */
+            id: number;
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Amount */
+            amount: string;
+            /** Description */
+            description: string;
+            /** Kind */
+            kind: string;
+            /** Account Id */
+            account_id: number;
+            /** Category Id */
+            category_id: number | null;
+            /** Destination Account Id */
+            destination_account_id: number | null;
+        };
+        /** TransactionIn */
+        TransactionIn: {
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Amount */
+            amount: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "expense" | "income" | "transfer";
+            /** Account Id */
+            account_id: number;
+            /** Category Id */
+            category_id?: number | null;
+            /** Destination Account Id */
+            destination_account_id?: number | null;
+        };
+        /** TransactionPatchIn */
+        TransactionPatchIn: {
+            /** Date */
+            date?: string | null;
+            /** Amount */
+            amount?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Kind */
+            kind?: ("expense" | "income" | "transfer") | null;
+            /** Account Id */
+            account_id?: number | null;
+            /** Category Id */
+            category_id?: number | null;
+            /** Destination Account Id */
+            destination_account_id?: number | null;
+        };
+    };
     responses: never;
     parameters: never;
     requestBodies: never;
@@ -83,6 +310,213 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    ledger_api_list_accounts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountWithBalanceOut"][];
+                };
+            };
+        };
+    };
+    ledger_api_create_account: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccountIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountWithBalanceOut"];
+                };
+            };
+        };
+    };
+    ledger_api_patch_account: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                account_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccountPatchIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountWithBalanceOut"];
+                };
+            };
+        };
+    };
+    ledger_api_list_categories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryOut"][];
+                };
+            };
+        };
+    };
+    ledger_api_transaction_defaults: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManualEntryDefaultsOut"];
+                };
+            };
+        };
+    };
+    ledger_api_list_transactions: {
+        parameters: {
+            query?: {
+                account_id?: number | null;
+                category_id?: number | null;
+                kind?: string | null;
+                from?: string | null;
+                to?: string | null;
+                q?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransactionOut"][];
+                };
+            };
+        };
+    };
+    ledger_api_create_transaction_route: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TransactionIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransactionOut"];
+                };
+            };
+        };
+    };
+    ledger_api_delete_transaction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ledger_api_patch_transaction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TransactionPatchIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransactionOut"];
+                };
             };
         };
     };
