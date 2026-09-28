@@ -5,6 +5,7 @@ import { afterAll, afterEach, beforeAll } from 'vitest'
 import { server } from './server'
 
 beforeAll(() => {
+  document.cookie = 'csrftoken=test-csrf-token'
   server.listen({ onUnhandledRequest: 'error' })
 })
 
