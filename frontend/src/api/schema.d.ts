@@ -249,6 +249,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/insights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Insights */
+        get: operations["insights_api_get_insights"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -551,6 +568,33 @@ export interface components {
         ConfirmOut: {
             /** Created */
             created: number;
+        };
+        /** BreakdownItemOut */
+        BreakdownItemOut: {
+            category: components["schemas"]["CategoryOut"];
+            /** Amount */
+            amount: string;
+            /** Share */
+            share: string;
+        };
+        /** InsightsOut */
+        InsightsOut: {
+            /** Spending Over Time */
+            spending_over_time: components["schemas"]["SpendingBucketOut"][];
+            /** Expense Breakdown */
+            expense_breakdown: components["schemas"]["BreakdownItemOut"][];
+            /** Income Breakdown */
+            income_breakdown: components["schemas"]["BreakdownItemOut"][];
+        };
+        /** SpendingBucketOut */
+        SpendingBucketOut: {
+            /**
+             * Bucket
+             * Format: date
+             */
+            bucket: string;
+            /** Amount */
+            amount: string;
         };
     };
     responses: never;
@@ -1034,6 +1078,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ConfirmOut"];
+                };
+            };
+        };
+    };
+    insights_api_get_insights: {
+        parameters: {
+            query?: {
+                from?: string | null;
+                to?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InsightsOut"];
                 };
             };
         };
