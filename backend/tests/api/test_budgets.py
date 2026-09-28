@@ -5,7 +5,9 @@ import pytest
 from tests.conftest import csrf_delete, csrf_post, csrf_put
 
 
-def _category_id(client, *, side: str, name: str | None = None, protected: str | None = None) -> int:
+def _category_id(
+    client, *, side: str, name: str | None = None, protected: str | None = None
+) -> int:
     for cat in client.get("/api/categories").json():
         if cat["side"] != side:
             continue

@@ -11,7 +11,9 @@ from ledger.models import Category, Kind, Transaction
 from tests.conftest import csrf_delete, csrf_patch, csrf_post, csrf_put
 
 
-def _category_id(client, *, side: str, name: str | None = None, protected: str | None = None) -> int:
+def _category_id(
+    client, *, side: str, name: str | None = None, protected: str | None = None
+) -> int:
     for cat in client.get("/api/categories").json():
         if cat["side"] != side:
             continue
@@ -65,7 +67,10 @@ def test_duplicate_name_on_same_side_returns_400(api_client) -> None:
     csrf_post(
         api_client,
         "/api/categories",
-        {"name": "Refunds", "colour": "#111111", "side": "expense",
+        {
+            "name": "Refunds",
+            "colour": "#111111",
+            "side": "expense",
         },
     )
     again = csrf_post(

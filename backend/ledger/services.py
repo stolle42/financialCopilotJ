@@ -3,7 +3,8 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any
 
-from django.db import IntegrityError, transaction as db_transaction
+from django.db import IntegrityError
+from django.db import transaction as db_transaction
 from django.utils import timezone
 
 from budgets.models import Budget
@@ -33,14 +34,14 @@ def account_balances() -> dict[int, Decimal]:
     }
     for row in Transaction.objects.values("account_id", "kind", "amount"):
         effect = ledger.signed_effect(row["kind"], row["amount"], is_destination=False)
-        balances[row["account_id"]] = balances.get(row["account_id"], Decimal("0")) + effect
+        balances[row["account_id"]] = (
+            balances.get(row["account_id"], Decimal("0")) + effect
+        )
     for row in Transaction.objects.filter(kind=Kind.TRANSFER).values(
         "destination_account_id", "amount"
     ):
         dest_id = row["destination_account_id"]
-        effect = ledger.signed_effect(
-            Kind.TRANSFER, row["amount"], is_destination=True
-        )
+        effect = ledger.signed_effect(Kind.TRANSFER, row["amount"], is_destination=True)
         balances[dest_id] = balances.get(dest_id, Decimal("0")) + effect
     return {account_id: _quantize(amount) for account_id, amount in balances.items()}
 
@@ -155,7 +156,9 @@ def update_transaction(
     return tx
 
 
-def reconcile(account: Account, *, actual_balance: Decimal) -> tuple[Transaction | None, Decimal]:
+def reconcile(
+    account: Account, *, actual_balance: Decimal
+) -> tuple[Transaction | None, Decimal]:
     computed = account_balances()[account.id]
     today = timezone.localdate()
     entry = domain_reconciliation.reconciliation_entry(computed, actual_balance, today)
@@ -183,7 +186,9 @@ def create_category(*, name: str, colour: str, side: str) -> Category:
         raise ValueError("category name must be unique within this side") from exc
 
 
-def update_category(category: Category, *, name: str | None, colour: str | None) -> Category:
+def update_category(
+    category: Category, *, name: str | None, colour: str | None
+) -> Category:
     if name is not None:
         category.name = name
     if colour is not None:
@@ -207,9 +212,9 @@ def delete_category(category: Category) -> None:
 
 
 def manual_entry_defaults() -> dict[str, int]:
-    pref = ManualEntryPreference.objects.select_related("last_manual_entry_account").get(
-        pk=1
-    )
+    pref = ManualEntryPreference.objects.select_related(
+        "last_manual_entry_account"
+    ).get(pk=1)
     expense_uncat = _uncategorised_for_side(Side.EXPENSE)
     income_uncat = _uncategorised_for_side(Side.INCOME)
     return {

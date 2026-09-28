@@ -13,9 +13,7 @@ from imports.schemas import (
     MappingProfilePatchIn,
     PendingBatchDetailOut,
     PendingBatchSummaryOut,
-    PendingRowOut,
     PendingRowPatchIn,
-    VendorGroupOut,
 )
 from imports.services import (
     ImportError,
@@ -36,7 +34,9 @@ def _validate_amount_layout(data: dict) -> None:
     signed = amount not in (None, "")
     split = debit not in (None, "") and credit not in (None, "")
     if signed == split:
-        raise HttpError(400, "set either amount_column or debit_column and credit_column")
+        raise HttpError(
+            400, "set either amount_column or debit_column and credit_column"
+        )
 
 
 def _summary(batch: PendingBatch) -> dict:

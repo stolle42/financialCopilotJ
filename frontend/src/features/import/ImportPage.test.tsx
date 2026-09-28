@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
 import { importState, resetImportState } from '@/test/handlers/import'
-import { ledgerState, resetLedgerState } from '@/test/handlers/ledger'
+import { resetLedgerState } from '@/test/handlers/ledger'
 import { renderWithProviders } from '@/test/render'
 
 import { ImportReviewPage } from './ImportReviewPage'

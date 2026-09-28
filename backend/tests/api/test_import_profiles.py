@@ -42,16 +42,22 @@ def test_profile_crud(api_client) -> None:
 @pytest.mark.django_db
 def test_profile_name_must_be_unique(api_client) -> None:
     csrf_post(api_client, "/api/import/profiles", _profile_payload(name="Unique"))
-    response = csrf_post(api_client, "/api/import/profiles", _profile_payload(name="Unique"))
+    response = csrf_post(
+        api_client, "/api/import/profiles", _profile_payload(name="Unique")
+    )
     assert response.status_code == 400
 
 
 @pytest.mark.django_db
 def test_profile_requires_exactly_one_amount_layout(api_client) -> None:
-    bad = _profile_payload(amount_column="amount", debit_column="debit", credit_column="credit")
+    bad = _profile_payload(
+        amount_column="amount", debit_column="debit", credit_column="credit"
+    )
     assert csrf_post(api_client, "/api/import/profiles", bad).status_code == 400
 
-    missing = _profile_payload(amount_column=None, debit_column=None, credit_column=None)
+    missing = _profile_payload(
+        amount_column=None, debit_column=None, credit_column=None
+    )
     assert csrf_post(api_client, "/api/import/profiles", missing).status_code == 400
 
     split = _profile_payload(

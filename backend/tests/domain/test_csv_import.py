@@ -44,16 +44,30 @@ class TestDetectDelimiter:
 
 class TestProposeKind:
     def test_signed_negative_is_expense(self) -> None:
-        assert csv_import.propose_kind(signed_amount=Decimal("-1"), debit=None, credit=None) == "expense"
+        assert (
+            csv_import.propose_kind(
+                signed_amount=Decimal("-1"), debit=None, credit=None
+            )
+            == "expense"
+        )
 
     def test_signed_positive_is_income(self) -> None:
-        assert csv_import.propose_kind(signed_amount=Decimal("1"), debit=None, credit=None) == "income"
+        assert (
+            csv_import.propose_kind(signed_amount=Decimal("1"), debit=None, credit=None)
+            == "income"
+        )
 
     def test_debit_column_is_expense(self) -> None:
-        assert csv_import.propose_kind(signed_amount=None, debit=Decimal("1"), credit=None) == "expense"
+        assert (
+            csv_import.propose_kind(signed_amount=None, debit=Decimal("1"), credit=None)
+            == "expense"
+        )
 
     def test_credit_column_is_income(self) -> None:
-        assert csv_import.propose_kind(signed_amount=None, debit=None, credit=Decimal("1")) == "income"
+        assert (
+            csv_import.propose_kind(signed_amount=None, debit=None, credit=Decimal("1"))
+            == "income"
+        )
 
 
 class TestParseRows:
@@ -97,7 +111,10 @@ class TestParseRows:
 
     def test_parses_5000_rows_under_ten_seconds(self) -> None:
         header = "date,amount,description\n"
-        body = "".join(f"2026-01-{(index % 28) + 1:02d},-1.00,row {index}\n" for index in range(5000))
+        body = "".join(
+            f"2026-01-{(index % 28) + 1:02d},-1.00,row {index}\n"
+            for index in range(5000)
+        )
         start = time.perf_counter()
         rows = csv_import.parse_rows(header + body, _signed_profile())
         elapsed = time.perf_counter() - start

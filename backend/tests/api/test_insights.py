@@ -24,7 +24,9 @@ def _category_id(client, *, side: str, protected: str | None = None) -> int:
 
 
 @pytest.mark.django_db
-def test_insights_counts_only_transactions_in_period_excludes_transfers(api_client) -> None:
+def test_insights_counts_only_transactions_in_period_excludes_transfers(
+    api_client,
+) -> None:
     cash = _cash_id(api_client)
     checking = csrf_post(
         api_client,
@@ -87,7 +89,9 @@ def test_insights_counts_only_transactions_in_period_excludes_transfers(api_clie
         },
     )
 
-    response = api_client.get("/api/insights", {"from": "2026-03-01", "to": "2026-03-31"})
+    response = api_client.get(
+        "/api/insights", {"from": "2026-03-01", "to": "2026-03-31"}
+    )
     assert response.status_code == 200
     data = response.json()
     assert "budgets" in data
@@ -97,10 +101,16 @@ def test_insights_counts_only_transactions_in_period_excludes_transfers(api_clie
 
 
 @pytest.mark.django_db
-def test_insights_shows_unaccounted_from_reconciliation_like_entries(api_client) -> None:
+def test_insights_shows_unaccounted_from_reconciliation_like_entries(
+    api_client,
+) -> None:
     cash = _cash_id(api_client)
-    expense_unaccounted = _category_id(api_client, side="expense", protected="unaccounted")
-    income_unaccounted = _category_id(api_client, side="income", protected="unaccounted")
+    expense_unaccounted = _category_id(
+        api_client, side="expense", protected="unaccounted"
+    )
+    income_unaccounted = _category_id(
+        api_client, side="income", protected="unaccounted"
+    )
 
     csrf_post(
         api_client,
@@ -127,7 +137,9 @@ def test_insights_shows_unaccounted_from_reconciliation_like_entries(api_client)
         },
     )
 
-    response = api_client.get("/api/insights", {"from": "2026-05-01", "to": "2026-05-31"})
+    response = api_client.get(
+        "/api/insights", {"from": "2026-05-01", "to": "2026-05-31"}
+    )
     data = response.json()
     expense_names = {row["category"]["name"] for row in data["expense_breakdown"]}
     income_names = {row["category"]["name"] for row in data["income_breakdown"]}
@@ -137,7 +149,9 @@ def test_insights_shows_unaccounted_from_reconciliation_like_entries(api_client)
 
 @pytest.mark.django_db
 def test_insights_empty_period_returns_empty_arrays(api_client) -> None:
-    response = api_client.get("/api/insights", {"from": "2030-01-01", "to": "2030-01-31"})
+    response = api_client.get(
+        "/api/insights", {"from": "2030-01-01", "to": "2030-01-31"}
+    )
     data = response.json()
     assert data["spending_over_time"] == []
     assert data["expense_breakdown"] == []
@@ -204,7 +218,9 @@ def test_insights_performance_with_five_thousand_transactions(api_client) -> Non
         ]
     )
     start = time.perf_counter()
-    response = api_client.get("/api/insights", {"from": "2026-01-01", "to": "2026-01-31"})
+    response = api_client.get(
+        "/api/insights", {"from": "2026-01-01", "to": "2026-01-31"}
+    )
     elapsed = time.perf_counter() - start
     assert response.status_code == 200
     assert elapsed < 2.0

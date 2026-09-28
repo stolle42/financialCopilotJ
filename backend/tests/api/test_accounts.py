@@ -1,8 +1,5 @@
 """API tests for accounts (US1; reconcile deferred to US5)."""
 
-import json
-from decimal import Decimal
-
 import pytest
 
 from tests.conftest import csrf_patch, csrf_post

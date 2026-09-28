@@ -10,7 +10,9 @@ class ValidationError(ValueError):
     """Raised when transaction fields violate domain rules."""
 
 
-def signed_effect(kind: str, amount: Decimal, *, is_destination: bool = False) -> Decimal:
+def signed_effect(
+    kind: str, amount: Decimal, *, is_destination: bool = False
+) -> Decimal:
     if kind == "expense":
         return -amount
     if kind == "income":

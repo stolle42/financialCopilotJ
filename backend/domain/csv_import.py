@@ -43,7 +43,9 @@ def detect_delimiter(header_line: str) -> str:
     return best
 
 
-def propose_kind(*, signed_amount: Decimal | None, debit: Decimal | None, credit: Decimal | None) -> str:
+def propose_kind(
+    *, signed_amount: Decimal | None, debit: Decimal | None, credit: Decimal | None
+) -> str:
     if debit is not None and debit > 0:
         return "expense"
     if credit is not None and credit > 0:

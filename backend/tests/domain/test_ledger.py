@@ -9,27 +9,27 @@ from domain import ledger
 
 class TestSignedEffect:
     def test_expense_reduces_source_account(self) -> None:
-        assert ledger.signed_effect("expense", Decimal("10.00"), is_destination=False) == Decimal(
-            "-10.00"
-        )
+        assert ledger.signed_effect(
+            "expense", Decimal("10.00"), is_destination=False
+        ) == Decimal("-10.00")
 
     def test_income_increases_source_account(self) -> None:
-        assert ledger.signed_effect("income", Decimal("10.00"), is_destination=False) == Decimal(
-            "10.00"
-        )
+        assert ledger.signed_effect(
+            "income", Decimal("10.00"), is_destination=False
+        ) == Decimal("10.00")
 
     def test_transfer_reduces_source_and_increases_destination(self) -> None:
-        assert ledger.signed_effect("transfer", Decimal("25.00"), is_destination=False) == Decimal(
-            "-25.00"
-        )
-        assert ledger.signed_effect("transfer", Decimal("25.00"), is_destination=True) == Decimal(
-            "25.00"
-        )
+        assert ledger.signed_effect(
+            "transfer", Decimal("25.00"), is_destination=False
+        ) == Decimal("-25.00")
+        assert ledger.signed_effect(
+            "transfer", Decimal("25.00"), is_destination=True
+        ) == Decimal("25.00")
 
     def test_zero_amount_is_allowed(self) -> None:
-        assert ledger.signed_effect("expense", Decimal("0.00"), is_destination=False) == Decimal(
-            "0.00"
-        )
+        assert ledger.signed_effect(
+            "expense", Decimal("0.00"), is_destination=False
+        ) == Decimal("0.00")
 
 
 class TestComputeBalance:

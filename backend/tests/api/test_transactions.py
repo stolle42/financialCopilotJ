@@ -9,7 +9,9 @@ def _cash_id(client) -> int:
     return client.get("/api/accounts").json()[0]["id"]
 
 
-def _category_id(client, *, side: str, name: str | None = None, protected: str | None = None) -> int:
+def _category_id(
+    client, *, side: str, name: str | None = None, protected: str | None = None
+) -> int:
     for cat in client.get("/api/categories").json():
         if cat["side"] != side:
             continue

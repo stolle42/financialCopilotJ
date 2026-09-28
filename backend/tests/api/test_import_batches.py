@@ -31,7 +31,9 @@ def _create_profile(client, **overrides):
     return csrf_post(client, "/api/import/profiles", payload).json()["id"]
 
 
-def _upload(client, *, account_id: int, profile_id: int, path: Path, name: str | None = None):
+def _upload(
+    client, *, account_id: int, profile_id: int, path: Path, name: str | None = None
+):
     content = path.read_bytes()
     upload = SimpleUploadedFile(
         name or path.name,
@@ -125,7 +127,9 @@ def test_confirm_creates_transactions_and_deletes_batch(api_client) -> None:
         path=FIXTURES / "signed_comma.csv",
     ).json()
     batch_id = upload["id"]
-    created = csrf_post(api_client, f"/api/import/batches/{batch_id}/confirm", {}).json()
+    created = csrf_post(
+        api_client, f"/api/import/batches/{batch_id}/confirm", {}
+    ).json()
     assert created["created"] == 3
     assert api_client.get(f"/api/import/batches/{batch_id}").status_code == 404
     assert len(api_client.get("/api/transactions").json()) == 3
@@ -136,9 +140,13 @@ def test_reupload_flags_all_as_duplicates(api_client) -> None:
     cash = _cash_id(api_client)
     profile_id = _create_profile(api_client, name="Dup test")
     path = FIXTURES / "signed_comma.csv"
-    first = _upload(api_client, account_id=cash, profile_id=profile_id, path=path).json()
+    first = _upload(
+        api_client, account_id=cash, profile_id=profile_id, path=path
+    ).json()
     csrf_post(api_client, f"/api/import/batches/{first['id']}/confirm", {})
-    second = _upload(api_client, account_id=cash, profile_id=profile_id, path=path).json()
+    second = _upload(
+        api_client, account_id=cash, profile_id=profile_id, path=path
+    ).json()
     assert second["duplicate_count"] == 3
     assert all(row["include"] is False for row in second["ungrouped_rows"])
 
@@ -178,5 +186,7 @@ def test_patch_rows_and_transfer_validation(api_client) -> None:
     ).json()
     assert patched["ungrouped_rows"][0]["kind"] == "transfer"
     assert patched["ungrouped_rows"][1]["include"] is False
-    bad_confirm = csrf_post(api_client, f"/api/import/batches/{detail['id']}/confirm", {})
+    bad_confirm = csrf_post(
+        api_client, f"/api/import/batches/{detail['id']}/confirm", {}
+    )
     assert bad_confirm.status_code == 400

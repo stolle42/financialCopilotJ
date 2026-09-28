@@ -1,13 +1,11 @@
 """API tests for account reconciliation (US5)."""
 
 from datetime import date
-from decimal import Decimal
 
 import pytest
-from django.utils import timezone
 
 from ledger.models import Transaction
-from tests.conftest import csrf_post, csrf_put
+from tests.conftest import csrf_post
 
 
 def _cash_id(client) -> int:
@@ -22,7 +20,9 @@ def _category_id(client, *, side: str, protected: str) -> int:
 
 
 @pytest.mark.django_db
-def test_reconcile_lower_balance_books_expense_unaccounted(api_client, monkeypatch) -> None:
+def test_reconcile_lower_balance_books_expense_unaccounted(
+    api_client, monkeypatch
+) -> None:
     monkeypatch.setattr(
         "ledger.services.timezone.localdate",
         lambda: date(2026, 5, 20),
@@ -58,12 +58,16 @@ def test_reconcile_lower_balance_books_expense_unaccounted(api_client, monkeypat
     assert tx["amount"] == "15.00"
     assert tx["description"] == "Reconciliation"
     assert tx["date"] == "2026-05-20"
-    expense_unaccounted = _category_id(api_client, side="expense", protected="unaccounted")
+    expense_unaccounted = _category_id(
+        api_client, side="expense", protected="unaccounted"
+    )
     assert tx["category_id"] == expense_unaccounted
 
 
 @pytest.mark.django_db
-def test_reconcile_higher_balance_books_income_unaccounted(api_client, monkeypatch) -> None:
+def test_reconcile_higher_balance_books_income_unaccounted(
+    api_client, monkeypatch
+) -> None:
     monkeypatch.setattr(
         "ledger.services.timezone.localdate",
         lambda: date(2026, 5, 21),
@@ -93,7 +97,9 @@ def test_reconcile_higher_balance_books_income_unaccounted(api_client, monkeypat
     tx = response.json()["transaction"]
     assert tx["kind"] == "income"
     assert tx["amount"] == "20.00"
-    income_unaccounted = _category_id(api_client, side="income", protected="unaccounted")
+    income_unaccounted = _category_id(
+        api_client, side="income", protected="unaccounted"
+    )
     assert tx["category_id"] == income_unaccounted
 
 
@@ -158,4 +164,9 @@ def test_reconcile_does_not_change_manual_entry_default_account(api_client) -> N
         {"actual_balance": "0.00"},
     )
     assert api_client.get("/api/transactions/defaults").json()["account_id"] == checking
-    assert Transaction.objects.filter(account_id=cash, description="Reconciliation").count() == 0
+    assert (
+        Transaction.objects.filter(
+            account_id=cash, description="Reconciliation"
+        ).count()
+        == 0
+    )

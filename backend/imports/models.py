@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from django.db import models
 from django.db.models import Q
 
@@ -41,7 +39,9 @@ class MappingProfile(models.Model):
 
 
 class PendingBatch(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.PROTECT, related_name="import_batches")
+    account = models.ForeignKey(
+        Account, on_delete=models.PROTECT, related_name="import_batches"
+    )
     profile = models.ForeignKey(
         MappingProfile, on_delete=models.PROTECT, related_name="batches"
     )
@@ -56,7 +56,9 @@ class PendingBatch(models.Model):
 
 
 class PendingRow(models.Model):
-    batch = models.ForeignKey(PendingBatch, on_delete=models.CASCADE, related_name="rows")
+    batch = models.ForeignKey(
+        PendingBatch, on_delete=models.CASCADE, related_name="rows"
+    )
     row_number = models.PositiveIntegerField()
     raw_line = models.TextField()
     parse_error = models.TextField(null=True, blank=True)

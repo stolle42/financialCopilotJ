@@ -62,8 +62,10 @@ def insights_payload(*, start: date, end: date) -> dict:
     )
     if expense_qs.exists():
         trunc = TruncDay("date") if daily else TruncMonth("date")
-        aggregated = expense_qs.annotate(bucket=trunc).values("bucket").annotate(
-            total=Sum("amount")
+        aggregated = (
+            expense_qs.annotate(bucket=trunc)
+            .values("bucket")
+            .annotate(total=Sum("amount"))
         )
         bucket_lookup: dict[date, Decimal] = {}
         for row in aggregated:
@@ -91,8 +93,12 @@ def insights_payload(*, start: date, end: date) -> dict:
     else:
         spending = []
 
-    expense_breakdown = domain_insights.breakdown(_category_rows(side="expense", start=start, end=end))
-    income_breakdown = domain_insights.breakdown(_category_rows(side="income", start=start, end=end))
+    expense_breakdown = domain_insights.breakdown(
+        _category_rows(side="expense", start=start, end=end)
+    )
+    income_breakdown = domain_insights.breakdown(
+        _category_rows(side="income", start=start, end=end)
+    )
 
     budget_month = domain_budgets.most_recent_period_in(start, end)
     budget_items = progress_for_month(budget_month)

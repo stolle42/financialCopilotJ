@@ -8,7 +8,7 @@ from django.db import transaction as db_transaction
 from domain import csv_import, duplicates, grouping
 from domain.csv_import import CsvMappingProfile
 from imports.models import MappingProfile, PendingBatch, PendingRow
-from ledger.models import Category, Kind, Side, Transaction
+from ledger.models import Kind, Side, Transaction
 from ledger.services import _uncategorised_for_side, create_transaction
 
 

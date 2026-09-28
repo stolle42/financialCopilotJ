@@ -16,8 +16,8 @@ and the code, not here.
 
 ```powershell
 cd backend
-uv sync                       # creates .venv and installs Django, Ninja, pytest
-uv run python manage.py migrate   # schema + seed: Cash account, predefined categories
+uv sync                            # creates .venv and installs Django, Ninja, pytest, ruff
+uv run python manage.py migrate    # schema + seed: Cash account, predefined categories
 
 cd ../frontend
 pnpm install
@@ -45,16 +45,38 @@ cd ../backend; uv run python manage.py runserver    # serves the SPA and the API
 
 Open http://localhost:8000.
 
-## Test
+## Regenerate API types (after backend API changes)
+
+From the repo root:
 
 ```powershell
-cd backend;  uv run pytest          # domain tests (no Django) + API tests (in-memory SQLite)
-cd frontend; pnpm test              # Vitest + Testing Library, API mocked with MSW
+cd frontend
+pnpm api:export    # OpenAPI JSON via Django (../frontend/openapi.json, gitignored)
+pnpm api:types     # TypeScript client types → src/api/schema.d.ts
 ```
 
-`uv run pytest backend/tests/domain` must pass without a database and without `DJANGO_SETTINGS_MODULE`
-set; the guard test in that folder fails if any `backend/domain/` module imports Django
+Commit `src/api/schema.d.ts` when the API contract changes.
+
+## Test and lint
+
+```powershell
+cd backend
+uv run ruff check .
+uv run ruff format --check .
+uv run pytest                      # domain + API tests (in-memory SQLite)
+uv run pytest tests/domain         # pure domain only (no database)
+
+cd ../frontend
+pnpm lint
+pnpm test                          # Vitest + Testing Library, API mocked with MSW
+pnpm build
+```
+
+`tests/domain/test_no_django_imports.py` fails if any `backend/domain/` module imports Django
 ([research R-9](research.md#r-9-testing)).
+
+SPA serving tests (`tests/api/test_spa.py`) require `frontend/dist/index.html`; run `pnpm build`
+in `frontend/` first or those tests are skipped.
 
 ## Validation scenarios
 
@@ -76,6 +98,7 @@ Also check, once per release:
 - With the network tab open, confirm no request leaves `localhost` while running scenarios 1–6
   ([FR-061](spec.md#fr-061)); this check changes when a hosted release is chosen
   ([research R-1](research.md#r-1-hosting-model-versus-the-spec)).
+- Confirm the UI exposes no payment or money-movement actions ([FR-062](spec.md#fr-062)).
 
 ## Sample CSV files for scenario 2
 

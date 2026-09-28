@@ -1,14 +1,13 @@
 from decimal import Decimal
 
 from django.db import IntegrityError
-from django.http import Http404
 from django.shortcuts import get_object_or_404
 from ninja import Query, Router
 from ninja.errors import HttpError
 
 from domain import ledger
-from ledger.models import Account, Category, Transaction
 from ledger import services
+from ledger.models import Account, Category, Transaction
 from ledger.schemas import (
     AccountIn,
     AccountPatchIn,
@@ -122,9 +121,7 @@ def create_category_route(request, body: CategoryIn):
 def patch_category(request, category_id: int, body: CategoryPatchIn):
     category = get_object_or_404(Category, pk=category_id)
     try:
-        return services.update_category(
-            category, name=body.name, colour=body.colour
-        )
+        return services.update_category(category, name=body.name, colour=body.colour)
     except ValueError as exc:
         raise HttpError(400, str(exc)) from exc
 

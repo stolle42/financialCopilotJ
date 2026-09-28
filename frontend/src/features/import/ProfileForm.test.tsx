@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { importState, resetImportState } from '@/test/handlers/import'
+import { resetImportState } from '@/test/handlers/import'
 import { resetLedgerState } from '@/test/handlers/ledger'
 import { renderWithProviders } from '@/test/render'
 

@@ -244,11 +244,11 @@ protected pair undeletable.
 
 **Purpose**: Single-process run and closing the design artifacts.
 
-- [ ] T083 Write `backend/tests/api/test_spa.py`: `GET /` and `GET /insights` return `index.html` when `frontend/dist/index.html` exists (skip otherwise) and `GET /api/unknown` still returns 404 JSON. Then implement the catch-all view in `backend/config/urls.py` and `STATICFILES_DIRS`/`WhiteNoise`-free static serving in `backend/config/settings.py` per [R-7](research.md#r-7-serving-the-spa)
-- [ ] T085 [P] Reduce `specs/001-finance-tracker-v1/contracts/api.md` to its Conventions and Frontend routes sections plus a pointer to `GET /api/openapi.json`, now that the served document is authoritative ([R-6](research.md#r-6-contract-between-frontend-and-backend), Principle I)
-- [ ] T086 [P] Reconcile `specs/001-finance-tracker-v1/quickstart.md` with the real commands and scripts (`api:export`, `api:types`, test paths) so a fresh checkout on another machine follows it verbatim
-- [ ] T087 Run the full check in `backend/` (`uv run ruff check .`, `uv run ruff format --check .`, `uv run pytest`) and in `frontend/` (`pnpm lint`, `pnpm test`); fix findings in the files reported
-- [ ] T088 Run all six [quickstart validation scenarios](quickstart.md#validation-scenarios) on a fresh database plus the network-tab check for [FR-061](spec.md#fr-061) and confirm the app exposes no payment or money-movement actions ([FR-062](spec.md#fr-062)); record the pass in the commit message
+- [x] T083 Write `backend/tests/api/test_spa.py`: `GET /` and `GET /insights` return `index.html` when `frontend/dist/index.html` exists (skip otherwise) and `GET /api/unknown` still returns 404 JSON. Then implement the catch-all view in `backend/config/urls.py` and `STATICFILES_DIRS`/`WhiteNoise`-free static serving in `backend/config/settings.py` per [R-7](research.md#r-7-serving-the-spa)
+- [x] T085 [P] Reduce `specs/001-finance-tracker-v1/contracts/api.md` to its Conventions and Frontend routes sections plus a pointer to `GET /api/openapi.json`, now that the served document is authoritative ([R-6](research.md#r-6-contract-between-frontend-and-backend), Principle I)
+- [x] T086 [P] Reconcile `specs/001-finance-tracker-v1/quickstart.md` with the real commands and scripts (`api:export`, `api:types`, test paths) so a fresh checkout on another machine follows it verbatim
+- [x] T087 Run the full check in `backend/` (`uv run ruff check .`, `uv run ruff format --check .`, `uv run pytest`) and in `frontend/` (`pnpm lint`, `pnpm test`); fix findings in the files reported
+- [x] T088 Run all six [quickstart validation scenarios](quickstart.md#validation-scenarios) on a fresh database plus the network-tab check for [FR-061](spec.md#fr-061) and confirm the app exposes no payment or money-movement actions ([FR-062](spec.md#fr-062)); record the pass in the commit message
 
 ---
 

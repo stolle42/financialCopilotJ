@@ -11,8 +11,12 @@ def test_period_containing_is_calendar_month() -> None:
 
 
 def test_most_recent_period_in_picks_latest_overlapping_month() -> None:
-    assert budgets.most_recent_period_in(date(2026, 7, 1), date(2026, 9, 30)) == "2026-09"
-    assert budgets.most_recent_period_in(date(2026, 7, 15), date(2026, 8, 10)) == "2026-08"
+    assert (
+        budgets.most_recent_period_in(date(2026, 7, 1), date(2026, 9, 30)) == "2026-09"
+    )
+    assert (
+        budgets.most_recent_period_in(date(2026, 7, 15), date(2026, 8, 10)) == "2026-08"
+    )
 
 
 def test_progress_over_limit_when_spent_exceeds_limit() -> None:

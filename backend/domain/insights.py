@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import date, timedelta
 from decimal import Decimal
-from typing import Any, Iterable
+from typing import Any
 
 
 def period_within_one_calendar_month(start: date, end: date) -> bool:
