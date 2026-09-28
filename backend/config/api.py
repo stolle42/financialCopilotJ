@@ -11,6 +11,10 @@ class SpaCsrfAuth(APIKeyCookie):
 
 api = NinjaAPI(auth=SpaCsrfAuth(), title="Financial Copilot")
 
+from ledger.api import router as ledger_router  # noqa: E402
+
+api.add_router("", ledger_router)
+
 
 @api.get("/health")
 def health(request) -> dict[str, str]:
