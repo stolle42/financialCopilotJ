@@ -84,8 +84,6 @@ export function TransactionForm({
       amount: '0.00',
       description: '',
       kind: 'expense',
-      account_id: 1,
-      category_id: 10,
     },
   })
 
@@ -141,6 +139,8 @@ export function TransactionForm({
   }, [form, initial, kind, uncategorisedForKind])
 
   const destinationAccounts = accounts.filter((a) => a.id !== accountId)
+  const formReady =
+    defaults !== undefined && accounts.length > 0 && categories.length > 0
 
   return (
     <Form {...form}>
@@ -172,6 +172,14 @@ export function TransactionForm({
                   field.onChange(value)
                   if (value === 'transfer') {
                     form.setValue('category_id', undefined)
+                    return
+                  }
+                  const uncategorised = categories.find(
+                    (c) =>
+                      c.side === value && c.protected_role === 'uncategorised',
+                  )
+                  if (uncategorised) {
+                    form.setValue('category_id', uncategorised.id)
                   }
                 }}
               >
@@ -330,8 +338,15 @@ export function TransactionForm({
             </FormItem>
           )}
         />
-        <div className="md:col-span-2">
-          <Button type="submit">{submitLabel}</Button>
+        <div className="md:col-span-2 space-y-2">
+          {Object.keys(form.formState.errors).length > 0 ? (
+            <p className="text-destructive text-sm">
+              Fix the highlighted fields before saving.
+            </p>
+          ) : null}
+          <Button type="submit" disabled={!formReady || form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? 'Saving…' : submitLabel}
+          </Button>
         </div>
       </form>
     </Form>

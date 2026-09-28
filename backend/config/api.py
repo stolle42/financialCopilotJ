@@ -1,3 +1,4 @@
+from django.middleware.csrf import get_token
 from ninja import NinjaAPI
 from ninja.security import APIKeyCookie
 
@@ -20,6 +21,7 @@ api.add_router("", imports_router)
 
 @api.get("/health")
 def health(request) -> dict[str, str]:
+    get_token(request)
     return {"status": "ok"}
 
 

@@ -15,6 +15,9 @@ type TransactionRow = {
   amount: string
   description: string
   kind: string
+  account_id: number
+  category_id: number | null
+  destination_account_id: number | null
 }
 
 type TransactionListProps = {

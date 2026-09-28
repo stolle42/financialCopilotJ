@@ -170,4 +170,5 @@ export const ledgerHandlers = [
     ledgerState.transactions = ledgerState.transactions.filter((t) => t.id !== id)
     return new HttpResponse(null, { status: 204 })
   }),
+  http.get(`${API}/health`, () => HttpResponse.json({ status: 'ok' })),
 ]

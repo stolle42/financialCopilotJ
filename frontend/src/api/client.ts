@@ -36,20 +36,25 @@ export async function apiFetch(
   input: RequestInfo | URL,
   init?: RequestInit,
 ): Promise<Response> {
+  const withCredentials: RequestInit = { credentials: 'include', ...init }
+
   if (input instanceof Request) {
-    return fetch(input.url, {
-      method: input.method,
-      headers: input.headers,
-      body:
-        input.method === 'GET' || input.method === 'HEAD'
-          ? undefined
-          : input.body,
-      redirect: input.redirect,
-      signal: input.signal,
-      ...init,
-    })
+    if (import.meta.env.VITEST) {
+      return fetch(input.url, {
+        method: input.method,
+        headers: input.headers,
+        body:
+          input.method === 'GET' || input.method === 'HEAD'
+            ? undefined
+            : input.body,
+        redirect: input.redirect,
+        signal: input.signal,
+        ...withCredentials,
+      })
+    }
+    return fetch(input, withCredentials)
   }
-  return fetch(input, init)
+  return fetch(input, withCredentials)
 }
 
 export const apiClient = createClient<paths>({

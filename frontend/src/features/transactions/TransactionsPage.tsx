@@ -42,6 +42,7 @@ export function TransactionsPage() {
     (TransactionFormValues & { id: number }) | null
   >(null)
   const [deleting, setDeleting] = useState<{ id: number } | null>(null)
+  const [quickAddKey, setQuickAddKey] = useState(0)
 
   return (
     <div className="space-y-6">
@@ -57,8 +58,15 @@ export function TransactionsPage() {
           <CardTitle>Quick add</CardTitle>
         </CardHeader>
         <CardContent>
+          {createTx.isError ? (
+            <p className="text-destructive mb-4 text-sm">
+              {formatSaveError(createTx.error)}
+            </p>
+          ) : null}
           <TransactionForm
+            key={quickAddKey}
             onSubmit={async (values) => {
+              createTx.reset()
               await createTx.mutateAsync({
                 date: values.date,
                 amount: values.amount,
@@ -68,6 +76,7 @@ export function TransactionsPage() {
                 category_id: values.category_id,
                 destination_account_id: values.destination_account_id,
               })
+              setQuickAddKey((key) => key + 1)
             }}
           />
         </CardContent>
@@ -92,11 +101,9 @@ export function TransactionsPage() {
                 amount: row.amount,
                 description: row.description,
                 kind: row.kind as TransactionFormValues['kind'],
-                account_id: row.account_id as number,
-                category_id: row.category_id as number | undefined,
-                destination_account_id: row.destination_account_id as
-                  | number
-                  | undefined,
+                account_id: row.account_id,
+                category_id: row.category_id ?? undefined,
+                destination_account_id: row.destination_account_id ?? undefined,
               })
             }
             onDelete={(row) => setDeleting({ id: row.id })}
@@ -147,4 +154,17 @@ export function TransactionsPage() {
       </AlertDialog>
     </div>
   )
+}
+
+function formatSaveError(error: unknown): string {
+  const fallback =
+    'Could not save the transaction. Refresh the page and try again.'
+  if (!error || typeof error !== 'object' || !('detail' in error)) {
+    return fallback
+  }
+  const { detail } = error as { detail: unknown }
+  if (typeof detail === 'string') {
+    return detail
+  }
+  return fallback
 }

@@ -1,4 +1,7 @@
+import { useEffect } from 'react'
 import { Link, Outlet } from 'react-router'
+
+import { apiClient } from '@/api/client'
 
 const navItems = [
   { to: '/', label: 'Transactions' },
@@ -10,6 +13,10 @@ const navItems = [
 ] as const
 
 export function AppShell() {
+  useEffect(() => {
+    void apiClient.GET('/api/health')
+  }, [])
+
   return (
     <div className="flex min-h-svh">
       <nav
