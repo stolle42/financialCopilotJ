@@ -13,7 +13,9 @@ from ledger.schemas import (
     AccountIn,
     AccountPatchIn,
     AccountWithBalanceOut,
+    CategoryIn,
     CategoryOut,
+    CategoryPatchIn,
     ManualEntryDefaultsOut,
     ReconcileIn,
     ReconcileOut,
@@ -104,6 +106,37 @@ def reconcile_account(request, account_id: int, body: ReconcileIn):
 @router.get("/categories", response=list[CategoryOut])
 def list_categories(request):
     return Category.objects.all()
+
+
+@router.post("/categories", response=CategoryOut)
+def create_category_route(request, body: CategoryIn):
+    try:
+        return services.create_category(
+            name=body.name, colour=body.colour, side=body.side
+        )
+    except ValueError as exc:
+        raise HttpError(400, str(exc)) from exc
+
+
+@router.patch("/categories/{category_id}", response=CategoryOut)
+def patch_category(request, category_id: int, body: CategoryPatchIn):
+    category = get_object_or_404(Category, pk=category_id)
+    try:
+        return services.update_category(
+            category, name=body.name, colour=body.colour
+        )
+    except ValueError as exc:
+        raise HttpError(400, str(exc)) from exc
+
+
+@router.delete("/categories/{category_id}", response={204: None})
+def delete_category_route(request, category_id: int):
+    category = get_object_or_404(Category, pk=category_id)
+    try:
+        services.delete_category(category)
+    except ValueError as exc:
+        raise HttpError(409, str(exc)) from exc
+    return 204, None
 
 
 @router.get("/transactions/defaults", response=ManualEntryDefaultsOut)

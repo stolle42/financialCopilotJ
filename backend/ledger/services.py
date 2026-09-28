@@ -3,11 +3,13 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any
 
-from django.db import transaction as db_transaction
+from django.db import IntegrityError, transaction as db_transaction
 from django.utils import timezone
 
+from budgets.models import Budget
 from domain import ledger
 from domain import reconciliation as domain_reconciliation
+from imports.models import PendingRow
 from ledger.models import (
     Account,
     Category,
@@ -172,6 +174,36 @@ def reconcile(account: Account, *, actual_balance: Decimal) -> tuple[Transaction
         update_default_account=False,
     )
     return tx, account_balances()[account.id]
+
+
+def create_category(*, name: str, colour: str, side: str) -> Category:
+    try:
+        return Category.objects.create(name=name, colour=colour, side=side)
+    except IntegrityError as exc:
+        raise ValueError("category name must be unique within this side") from exc
+
+
+def update_category(category: Category, *, name: str | None, colour: str | None) -> Category:
+    if name is not None:
+        category.name = name
+    if colour is not None:
+        category.colour = colour
+    try:
+        category.save()
+    except IntegrityError as exc:
+        raise ValueError("category name must be unique within this side") from exc
+    return category
+
+
+def delete_category(category: Category) -> None:
+    if category.protected_role:
+        raise ValueError("protected categories cannot be deleted")
+    uncategorised = _uncategorised_for_side(category.side)
+    with db_transaction.atomic():
+        Transaction.objects.filter(category=category).update(category=uncategorised)
+        PendingRow.objects.filter(category=category).update(category=uncategorised)
+        Budget.objects.filter(category=category).delete()
+        category.delete()
 
 
 def manual_entry_defaults() -> dict[str, int]:

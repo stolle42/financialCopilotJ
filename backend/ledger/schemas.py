@@ -51,6 +51,17 @@ class CategoryOut(Schema):
     protected_role: str | None
 
 
+class CategoryIn(Schema):
+    name: str
+    colour: str
+    side: Literal["expense", "income"]
+
+
+class CategoryPatchIn(Schema):
+    name: str | None = None
+    colour: str | None = None
+
+
 class TransactionOut(Schema):
     id: int
     date: datetime.date
