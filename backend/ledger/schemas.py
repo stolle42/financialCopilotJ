@@ -96,3 +96,18 @@ class ManualEntryDefaultsOut(Schema):
     account_id: int
     expense_category_id: int
     income_category_id: int
+
+
+class ReconcileIn(Schema):
+    actual_balance: str
+
+    @field_validator("actual_balance")
+    @classmethod
+    def parse_actual_balance(cls, value: str) -> str:
+        dec = Decimal(value)
+        return _decimal_string(dec)
+
+
+class ReconcileOut(Schema):
+    transaction: TransactionOut | None
+    balance: str

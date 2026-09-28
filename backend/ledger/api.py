@@ -15,6 +15,8 @@ from ledger.schemas import (
     AccountWithBalanceOut,
     CategoryOut,
     ManualEntryDefaultsOut,
+    ReconcileIn,
+    ReconcileOut,
     TransactionIn,
     TransactionOut,
     TransactionPatchIn,
@@ -82,6 +84,21 @@ def patch_account(request, account_id: int, body: AccountPatchIn):
     except IntegrityError as exc:
         raise HttpError(400, "account name must be unique") from exc
     return _account_with_balance(account)
+
+
+@router.post("/accounts/{account_id}/reconcile", response=ReconcileOut)
+def reconcile_account(request, account_id: int, body: ReconcileIn):
+    account = get_object_or_404(Account, pk=account_id)
+    try:
+        tx, balance = services.reconcile(
+            account, actual_balance=Decimal(body.actual_balance)
+        )
+    except (ledger.ValidationError, ValueError) as exc:
+        raise HttpError(400, str(exc)) from exc
+    return {
+        "transaction": tx,
+        "balance": format(balance.quantize(Decimal("0.01")), "f"),
+    }
 
 
 @router.get("/categories", response=list[CategoryOut])

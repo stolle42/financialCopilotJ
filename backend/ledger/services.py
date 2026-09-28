@@ -4,9 +4,19 @@ from decimal import Decimal
 from typing import Any
 
 from django.db import transaction as db_transaction
+from django.utils import timezone
 
 from domain import ledger
-from ledger.models import Account, Category, Kind, ManualEntryPreference, Side, Transaction
+from domain import reconciliation as domain_reconciliation
+from ledger.models import (
+    Account,
+    Category,
+    Kind,
+    ManualEntryPreference,
+    ProtectedRole,
+    Side,
+    Transaction,
+)
 
 
 def _quantize(value: Decimal) -> Decimal:
@@ -41,6 +51,10 @@ def _category_side(category_id: int | None) -> str | None:
 
 def _uncategorised_for_side(side: str) -> Category:
     return Category.objects.get(side=side, protected_role="uncategorised")
+
+
+def _unaccounted_for_side(side: str) -> Category:
+    return Category.objects.get(side=side, protected_role=ProtectedRole.UNACCOUNTED)
 
 
 def create_transaction(
@@ -137,6 +151,27 @@ def update_transaction(
             )
     tx.refresh_from_db()
     return tx
+
+
+def reconcile(account: Account, *, actual_balance: Decimal) -> tuple[Transaction | None, Decimal]:
+    computed = account_balances()[account.id]
+    today = timezone.localdate()
+    entry = domain_reconciliation.reconciliation_entry(computed, actual_balance, today)
+    if entry is None:
+        return None, computed
+    side = Side.EXPENSE if entry["kind"] == Kind.EXPENSE else Side.INCOME
+    category = _unaccounted_for_side(side)
+    tx = create_transaction(
+        date=entry["date"],
+        amount=entry["amount"],
+        description=entry["description"],
+        kind=entry["kind"],
+        account_id=account.id,
+        category_id=category.id,
+        destination_account_id=None,
+        update_default_account=False,
+    )
+    return tx, account_balances()[account.id]
 
 
 def manual_entry_defaults() -> dict[str, int]:
