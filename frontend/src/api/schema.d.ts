@@ -266,6 +266,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/budgets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Budget Progress */
+        get: operations["budgets_api_list_budget_progress"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/budgets/{category_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Put Budget */
+        put: operations["budgets_api_put_budget"];
+        post?: never;
+        /** Delete Budget */
+        delete: operations["budgets_api_delete_budget"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -577,6 +612,23 @@ export interface components {
             /** Share */
             share: string;
         };
+        /** BudgetProgressItemOut */
+        BudgetProgressItemOut: {
+            category: components["schemas"]["CategoryOut"];
+            /** Monthly Limit */
+            monthly_limit: string;
+            /** Spent */
+            spent: string;
+            /** Over Limit */
+            over_limit: boolean;
+        };
+        /** BudgetsSectionOut */
+        BudgetsSectionOut: {
+            /** Month */
+            month: string;
+            /** Items */
+            items: components["schemas"]["BudgetProgressItemOut"][];
+        };
         /** InsightsOut */
         InsightsOut: {
             /** Spending Over Time */
@@ -585,6 +637,7 @@ export interface components {
             expense_breakdown: components["schemas"]["BreakdownItemOut"][];
             /** Income Breakdown */
             income_breakdown: components["schemas"]["BreakdownItemOut"][];
+            budgets: components["schemas"]["BudgetsSectionOut"];
         };
         /** SpendingBucketOut */
         SpendingBucketOut: {
@@ -595,6 +648,17 @@ export interface components {
             bucket: string;
             /** Amount */
             amount: string;
+        };
+        /** BudgetOut */
+        BudgetOut: {
+            category: components["schemas"]["CategoryOut"];
+            /** Monthly Limit */
+            monthly_limit: string;
+        };
+        /** BudgetLimitIn */
+        BudgetLimitIn: {
+            /** Monthly Limit */
+            monthly_limit: string;
         };
     };
     responses: never;
@@ -1102,6 +1166,74 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["InsightsOut"];
                 };
+            };
+        };
+    };
+    budgets_api_list_budget_progress: {
+        parameters: {
+            query?: {
+                month?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BudgetProgressItemOut"][];
+                };
+            };
+        };
+    };
+    budgets_api_put_budget: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BudgetLimitIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BudgetOut"];
+                };
+            };
+        };
+    };
+    budgets_api_delete_budget: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
