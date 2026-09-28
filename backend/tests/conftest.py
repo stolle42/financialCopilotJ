@@ -28,3 +28,17 @@ def csrf_patch(client: Client, path: str, data):
         json.dumps(data),
         content_type="application/json",
     )
+
+
+def csrf_put(client: Client, path: str, data):
+    import json
+
+    return client.put(
+        path,
+        json.dumps(data),
+        content_type="application/json",
+    )
+
+
+def csrf_delete(client: Client, path: str):
+    return client.delete(path)
