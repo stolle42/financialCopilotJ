@@ -52,7 +52,7 @@ Frontend component tests are `*.test.tsx` beside the feature; shared Vitest/MSW 
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T007 Write the import-guard test `backend/tests/domain/test_no_django_imports.py`: walk every module under `backend/domain/`, parse with `ast`, fail on any `import django…`/`from django…`, and fail if the package has no modules. Run it: it must fail because `backend/domain/` does not exist yet
+- [x] T007 Write the import-guard test `backend/tests/domain/test_no_django_imports.py`: walk every module under `backend/domain/`, parse with `ast`, fail on any `import django…`/`from django…`, and fail if the package has no modules. Run it: it must fail because `backend/domain/` does not exist yet
 - [ ] T008 Create the pure-Python package `backend/domain/__init__.py` (empty) and `backend/tests/domain/__init__.py`, `backend/tests/__init__.py`, `backend/tests/api/__init__.py`, `backend/tests/conftest.py`; the guard test now passes
 - [ ] T009 Create the four Django apps from [plan.md → Source Code](plan.md#source-code-repository-root) — `backend/ledger/`, `backend/imports/`, `backend/budgets/`, `backend/insights/` — each with `__init__.py`, `apps.py`, and `migrations/__init__.py` (`insights` without migrations); register them in `INSTALLED_APPS` in `backend/config/settings.py`
 - [ ] T010 Write `backend/tests/api/test_openapi.py` asserting `GET /api/openapi.json` returns 200 with `openapi` and `paths` keys, and that a POST to a Ninja route without a CSRF token is rejected (403). Run it: must fail
