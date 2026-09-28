@@ -16,6 +16,15 @@ type InsightsPayload = {
     share: string
   }[]
   income_breakdown: InsightsPayload['expense_breakdown']
+  budgets: {
+    month: string
+    items: {
+      category: InsightsPayload['expense_breakdown'][0]['category']
+      monthly_limit: string
+      spent: string
+      over_limit: boolean
+    }[]
+  }
 }
 
 export const insightsState = {
@@ -65,12 +74,30 @@ const septemberSample: InsightsPayload = {
       share: '1.0000',
     },
   ],
+  budgets: {
+    month: '2026-09',
+    items: [
+      {
+        category: {
+          id: 11,
+          name: 'Groceries',
+          colour: 'hsl(var(--chart-1))',
+          side: 'expense',
+          protected_role: null,
+        },
+        monthly_limit: '400.00',
+        spent: '450.00',
+        over_limit: true,
+      },
+    ],
+  },
 }
 
 const emptyPayload: InsightsPayload = {
   spending_over_time: [],
   expense_breakdown: [],
   income_breakdown: [],
+  budgets: { month: '2030-01', items: [] },
 }
 
 function payloadForRange(from: string, to: string): InsightsPayload {

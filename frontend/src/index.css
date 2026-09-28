@@ -138,3 +138,7 @@
   font-style: italic;
   text-decoration: underline dotted;
 }
+
+.budget-over-limit {
+  --primary: var(--destructive);
+}

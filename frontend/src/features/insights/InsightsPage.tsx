@@ -4,6 +4,7 @@ import { useInsights } from '@/api/queries/insights'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { currentMonth, resolvePreset, type DateRange } from '@/lib/periods'
 
+import { BudgetProgress } from './BudgetProgress'
 import { BreakdownDonut } from './BreakdownDonut'
 import { PeriodPicker } from './PeriodPicker'
 import { SpendingLineChart } from './SpendingLineChart'
@@ -45,6 +46,20 @@ export function InsightsPage() {
         <p className="text-destructive text-sm">
           Could not load insights for this period.
         </p>
+      ) : null}
+
+      {data?.budgets ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Budget progress</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <BudgetProgress
+              month={data.budgets.month}
+              items={data.budgets.items}
+            />
+          </CardContent>
+        </Card>
       ) : null}
 
       {data && isEmpty ? (
