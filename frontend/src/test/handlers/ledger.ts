@@ -92,6 +92,43 @@ export const ledgerHandlers = [
     ledgerState.accounts.push(account)
     return HttpResponse.json(account)
   }),
+  http.post(`${API}/accounts/:id/reconcile`, async ({ params, request }) => {
+    const id = Number(params.id)
+    const body = (await request.json()) as { actual_balance: string }
+    const account = ledgerState.accounts.find((a) => a.id === id)
+    if (!account) {
+      return HttpResponse.json({ detail: 'not found' }, { status: 404 })
+    }
+    const computed = Number(account.balance)
+    const actual = Number(body.actual_balance)
+    if (Number.isNaN(actual)) {
+      return HttpResponse.json({ detail: 'invalid balance' }, { status: 400 })
+    }
+    const computedCents = Math.round(computed * 100)
+    const actualCents = Math.round(actual * 100)
+    if (computedCents === actualCents) {
+      return HttpResponse.json({
+        transaction: null,
+        balance: account.balance,
+      })
+    }
+    const diffCents = Math.abs(computedCents - actualCents)
+    const diff = (diffCents / 100).toFixed(2)
+    const kind = actualCents < computedCents ? 'expense' : 'income'
+    const tx = {
+      id: ledgerState.nextTxId++,
+      date: new Date().toISOString().slice(0, 10),
+      amount: diff,
+      description: 'Reconciliation',
+      kind,
+      account_id: id,
+      category_id: kind === 'expense' ? 10 : 20,
+      destination_account_id: null,
+    }
+    ledgerState.transactions.unshift(tx)
+    account.balance = (actualCents / 100).toFixed(2)
+    return HttpResponse.json({ transaction: tx, balance: account.balance })
+  }),
   http.patch(`${API}/accounts/:id`, async ({ params, request }) => {
     const id = Number(params.id)
     const body = (await request.json()) as Record<string, string>

@@ -203,16 +203,16 @@ balance to Unaccounted.
 
 ### Tests for User Story 5 (write first, confirm they fail)
 
-- [ ] T071 [P] [US5] Domain tests `backend/tests/domain/test_reconciliation.py` for `reconciliation_entry` per [FR-005](spec.md#fr-005): lower actual → expense of the difference, higher → income, equal → none, dated the given day
-- [ ] T072 [P] [US5] API test `backend/tests/api/test_reconcile.py` for `POST /accounts/{id}/reconcile` in [contracts → Accounts](contracts/api.md#accounts): US5 scenarios 1–3 (Unaccounted category of the right side, description "Reconciliation", dated today, `transaction: null` when equal) and scenario 4 on an account of type `savings` ([FR-004](spec.md#fr-004)); after `POST /transactions` set `GET /transactions/defaults` to Checking, reconciling another account leaves `GET /transactions/defaults` still on Checking ([FR-006](spec.md#fr-006)); reconciliation difference booked to Unaccounted ([FR-005](spec.md#fr-005), [FR-035](spec.md#fr-035))
+- [x] T071 [P] [US5] Domain tests `backend/tests/domain/test_reconciliation.py` for `reconciliation_entry` per [FR-005](spec.md#fr-005): lower actual → expense of the difference, higher → income, equal → none, dated the given day
+- [x] T072 [P] [US5] API test `backend/tests/api/test_reconcile.py` for `POST /accounts/{id}/reconcile` in [contracts → Accounts](contracts/api.md#accounts): US5 scenarios 1–3 (Unaccounted category of the right side, description "Reconciliation", dated today, `transaction: null` when equal) and scenario 4 on an account of type `savings` ([FR-004](spec.md#fr-004)); after `POST /transactions` set `GET /transactions/defaults` to Checking, reconciling another account leaves `GET /transactions/defaults` still on Checking ([FR-006](spec.md#fr-006)); reconciliation difference booked to Unaccounted ([FR-005](spec.md#fr-005), [FR-035](spec.md#fr-035))
 
 ### Implementation for User Story 5
 
-- [ ] T073 [US5] Implement `backend/domain/reconciliation.py` until T071 passes
-- [ ] T074 [US5] Add `reconcile(account, actual_balance)` to `backend/ledger/services.py` (books via `create_transaction(..., update_default_account=False)` when a difference transaction is needed) and the endpoint to `backend/ledger/api.py`/`schemas.py`; T072 passes
-- [ ] T075 [US5] Regenerate `frontend/openapi.json` and `frontend/src/api/schema.d.ts`
-- [ ] T076 [US5] Frontend test `frontend/src/features/accounts/ReconcileDialog.test.tsx`: opens from every account row regardless of type; submits the actual balance; shows the booked transaction or the "already matches" message (US5 scenario 3); closes and the list shows the new balance
-- [ ] T077 [US5] Implement `frontend/src/features/accounts/ReconcileDialog.tsx`, add the mutation to `frontend/src/api/queries/accounts.ts` (invalidates `accounts`, `transactions`, `insights`), and the trigger in `AccountsPage.tsx`; T076 passes
+- [x] T073 [US5] Implement `backend/domain/reconciliation.py` until T071 passes
+- [x] T074 [US5] Add `reconcile(account, actual_balance)` to `backend/ledger/services.py` (books via `create_transaction(..., update_default_account=False)` when a difference transaction is needed) and the endpoint to `backend/ledger/api.py`/`schemas.py`; T072 passes
+- [x] T075 [US5] Regenerate `frontend/openapi.json` and `frontend/src/api/schema.d.ts`
+- [x] T076 [US5] Frontend test `frontend/src/features/accounts/ReconcileDialog.test.tsx`: opens from every account row regardless of type; submits the actual balance; shows the booked transaction or the "already matches" message (US5 scenario 3); closes and the list shows the new balance
+- [x] T077 [US5] Implement `frontend/src/features/accounts/ReconcileDialog.tsx`, add the mutation to `frontend/src/api/queries/accounts.ts` (invalidates `accounts`, `transactions`, `insights`), and the trigger in `AccountsPage.tsx`; T076 passes
 
 **Checkpoint**: Run [quickstart scenario 5](quickstart.md#validation-scenarios). Commit.
 

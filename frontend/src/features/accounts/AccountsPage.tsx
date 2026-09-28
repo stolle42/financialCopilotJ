@@ -25,6 +25,7 @@ import { formatMoney } from '@/lib/money'
 
 import { AccountForm, type AccountFormValues } from './AccountForm'
 import { OpeningBalanceWarning } from './OpeningBalanceWarning'
+import { ReconcileDialog } from './ReconcileDialog'
 
 export function AccountsPage() {
   const { data: accounts = [] } = useAccounts()
@@ -38,6 +39,11 @@ export function AccountsPage() {
   const [pendingOpeningBalance, setPendingOpeningBalance] = useState<
     string | null
   >(null)
+  const [reconciling, setReconciling] = useState<{
+    id: number
+    name: string
+    balance: string
+  } | null>(null)
 
   return (
     <div className="space-y-6">
@@ -71,22 +77,38 @@ export function AccountsPage() {
                     {formatMoney(account.balance)}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        setEditing({
-                          id: account.id,
-                          name: account.name,
-                          type: account.type as AccountFormValues['type'],
-                          opening_balance: account.opening_balance,
-                          balance: account.balance,
-                        })
-                      }
-                    >
-                      Edit
-                    </Button>
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setReconciling({
+                            id: account.id,
+                            name: account.name,
+                            balance: account.balance,
+                          })
+                        }
+                      >
+                        Reconcile
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setEditing({
+                            id: account.id,
+                            name: account.name,
+                            type: account.type as AccountFormValues['type'],
+                            opening_balance: account.opening_balance,
+                            balance: account.balance,
+                          })
+                        }
+                      >
+                        Edit
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -133,6 +155,16 @@ export function AccountsPage() {
           ) : null}
         </DialogContent>
       </Dialog>
+
+      <ReconcileDialog
+        account={reconciling}
+        open={reconciling !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setReconciling(null)
+          }
+        }}
+      />
 
       <OpeningBalanceWarning
         open={pendingOpeningBalance !== null && editing !== null}
