@@ -56,13 +56,17 @@ export function PendingRowControls({
         <Label className="text-xs">Kind</Label>
         <Select
           value={row.kind}
-          onValueChange={(kind) =>
+          onValueChange={(kind) => {
+            if (!kind) {
+              return
+            }
             onPatch({
               row_id: row.id,
               kind,
-              destination_account_id: kind === 'transfer' ? row.destination_account_id : null,
+              destination_account_id:
+                kind === 'transfer' ? row.destination_account_id : null,
             })
-          }
+          }}
         >
           <SelectTrigger className="w-full">
             <SelectValue />

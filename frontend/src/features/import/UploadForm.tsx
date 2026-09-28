@@ -65,7 +65,10 @@ export function UploadForm({ onUploaded }: UploadFormProps) {
     >
       <div>
         <Label htmlFor="upload-account">Account</Label>
-        <Select value={accountId} onValueChange={setAccountId}>
+        <Select
+          value={accountId}
+          onValueChange={(value) => setAccountId(value ?? '')}
+        >
           <SelectTrigger id="upload-account" className="w-full" aria-label="Account">
             <SelectValue placeholder="Select account">
               {accounts.find((a) => String(a.id) === accountId)?.name}
@@ -82,7 +85,10 @@ export function UploadForm({ onUploaded }: UploadFormProps) {
       </div>
       <div>
         <Label htmlFor="upload-profile">Mapping profile</Label>
-        <Select value={profileId} onValueChange={setProfileId}>
+        <Select
+          value={profileId}
+          onValueChange={(value) => setProfileId(value ?? '')}
+        >
           <SelectTrigger id="upload-profile" className="w-full" aria-label="Mapping profile">
             <SelectValue placeholder="Select profile">
               {profiles.find((p) => String(p.id) === profileId)?.name}

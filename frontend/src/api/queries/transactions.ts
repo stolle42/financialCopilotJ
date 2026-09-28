@@ -23,8 +23,17 @@ export function useTransactions(filters: TransactionFilters = {}) {
   return useQuery({
     queryKey: transactionKeys.list(filters),
     queryFn: async () => {
+      const query = {
+        kind: filters.kind,
+        from: filters.from,
+        to: filters.to,
+        q: filters.q,
+        account_id: filters.account_id
+          ? Number(filters.account_id)
+          : undefined,
+      }
       const { data, error } = await apiClient.GET('/api/transactions', {
-        params: { query: filters },
+        params: { query },
       })
       if (error) {
         throw error

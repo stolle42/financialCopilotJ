@@ -30,7 +30,8 @@ export function TransactionFiltersBar({
           onValueChange={(value) =>
             onChange({
               ...filters,
-              account_id: value === 'all' ? undefined : value,
+              account_id:
+                !value || value === 'all' ? undefined : value,
             })
           }
         >
@@ -54,7 +55,7 @@ export function TransactionFiltersBar({
           onValueChange={(value) =>
             onChange({
               ...filters,
-              kind: value === 'all' ? undefined : value,
+              kind: !value || value === 'all' ? undefined : value,
             })
           }
         >

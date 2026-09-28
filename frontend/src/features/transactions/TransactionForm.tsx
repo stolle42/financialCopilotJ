@@ -38,9 +38,9 @@ const schema = z
     }, 'Amount must be zero or positive'),
     description: z.string(),
     kind: z.enum(['expense', 'income', 'transfer']),
-    account_id: z.coerce.number(),
-    category_id: z.coerce.number().optional(),
-    destination_account_id: z.coerce.number().optional(),
+    account_id: z.number(),
+    category_id: z.number().optional(),
+    destination_account_id: z.number().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.kind === 'transfer') {
