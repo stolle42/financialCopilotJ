@@ -1,3 +1,5 @@
 import { setupServer } from 'msw/node'
 
-export const server = setupServer()
+import { ledgerHandlers } from './handlers/ledger'
+
+export const server = setupServer(...ledgerHandlers)

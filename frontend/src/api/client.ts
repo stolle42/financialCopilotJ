@@ -31,7 +31,31 @@ function resolveBaseUrl(): string {
   return 'http://localhost'
 }
 
-export const apiClient = createClient<paths>({ baseUrl: resolveBaseUrl() })
+/** MSW in Node only patches string-URL fetch; openapi-fetch calls fetch(Request). */
+async function apiFetch(
+  input: RequestInfo | URL,
+  init?: RequestInit,
+): Promise<Response> {
+  if (input instanceof Request) {
+    return fetch(input.url, {
+      method: input.method,
+      headers: input.headers,
+      body:
+        input.method === 'GET' || input.method === 'HEAD'
+          ? undefined
+          : input.body,
+      redirect: input.redirect,
+      signal: input.signal,
+      ...init,
+    })
+  }
+  return fetch(input, init)
+}
+
+export const apiClient = createClient<paths>({
+  baseUrl: resolveBaseUrl(),
+  fetch: apiFetch,
+})
 apiClient.use(csrfMiddleware)
 
 export type { paths }
