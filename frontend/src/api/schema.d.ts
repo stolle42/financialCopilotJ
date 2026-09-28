@@ -73,6 +73,23 @@ export interface paths {
         patch: operations["ledger_api_patch_account"];
         trace?: never;
     };
+    "/api/accounts/{account_id}/reconcile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reconcile Account */
+        post: operations["ledger_api_reconcile_account"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/categories": {
         parameters: {
             query?: never;
@@ -339,27 +356,11 @@ export interface components {
             /** Opening Balance */
             opening_balance?: string | null;
         };
-        /** CategoryOut */
-        CategoryOut: {
-            /** Id */
-            id: number;
-            /** Name */
-            name: string;
-            /** Colour */
-            colour: string;
-            /** Side */
-            side: string;
-            /** Protected Role */
-            protected_role: string | null;
-        };
-        /** ManualEntryDefaultsOut */
-        ManualEntryDefaultsOut: {
-            /** Account Id */
-            account_id: number;
-            /** Expense Category Id */
-            expense_category_id: number;
-            /** Income Category Id */
-            income_category_id: number;
+        /** ReconcileOut */
+        ReconcileOut: {
+            transaction: components["schemas"]["TransactionOut"] | null;
+            /** Balance */
+            balance: string;
         };
         /** TransactionOut */
         TransactionOut: {
@@ -382,6 +383,33 @@ export interface components {
             category_id: number | null;
             /** Destination Account Id */
             destination_account_id: number | null;
+        };
+        /** ReconcileIn */
+        ReconcileIn: {
+            /** Actual Balance */
+            actual_balance: string;
+        };
+        /** CategoryOut */
+        CategoryOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Colour */
+            colour: string;
+            /** Side */
+            side: string;
+            /** Protected Role */
+            protected_role: string | null;
+        };
+        /** ManualEntryDefaultsOut */
+        ManualEntryDefaultsOut: {
+            /** Account Id */
+            account_id: number;
+            /** Expense Category Id */
+            expense_category_id: number;
+            /** Income Category Id */
+            income_category_id: number;
         };
         /** TransactionIn */
         TransactionIn: {
@@ -771,6 +799,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AccountWithBalanceOut"];
+                };
+            };
+        };
+    };
+    ledger_api_reconcile_account: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                account_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReconcileIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReconcileOut"];
                 };
             };
         };
