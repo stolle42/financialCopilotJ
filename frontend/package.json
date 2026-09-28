@@ -9,6 +9,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "test": "vitest run",
+    "api:export": "uv run --directory ../backend python manage.py export_openapi_schema --api config.api.api --output ../frontend/openapi.json",
     "api:types": "openapi-typescript openapi.json -o src/api/schema.d.ts"
   },
   "dependencies": {
