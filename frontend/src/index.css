@@ -128,3 +128,13 @@
     @apply font-sans;
     }
 }
+
+.unaccounted-pattern {
+  opacity: 0.85;
+  stroke-dasharray: 4 3;
+}
+
+.unaccounted-legend-label {
+  font-style: italic;
+  text-decoration: underline dotted;
+}
