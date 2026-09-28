@@ -127,11 +127,11 @@ flagging, vendor-grouped review, confirm/discard.
 - [x] T042 [US2] Implement `backend/imports/services.py`
 - [x] T043 [US2] Implement `backend/imports/schemas.py` and `backend/imports/api.py`
 - [x] T044 [US2] Regenerate `frontend/openapi.json` and `frontend/src/api/schema.d.ts`
-- [ ] T045 [P] [US2] Frontend tests `frontend/src/features/import/ProfileForm.test.tsx` (handlers in `frontend/src/test/handlers/import.ts`): fields of [FR-021](spec.md#fr-021) with the two amount layouts as a toggle, date format and encoding selects, save creates a profile; `frontend/src/features/import/ImportPage.test.tsx`: lists pending batches with counts, upload form needs account + profile + file, successful upload navigates to the review route ([FR-020](spec.md#fr-020))
-- [ ] T046 [P] [US2] Frontend tests `frontend/src/features/import/ReviewPage.test.tsx`: groups render with a group category select that patches every row id in the group; a `Collapsible` unfolds rows for per-row selects; profiles without counterparty show only ungrouped rows; each row select defaults to Uncategorised and has no empty option ([FR-029](spec.md#fr-029)); marking a row as transfer shows a destination select excluding the batch account ([FR-023](spec.md#fr-023)); duplicate and unparsable counts are rendered as small text buttons and only their click reveals the rows, with a reason per unparsable row and an include checkbox per duplicate ([FR-025](spec.md#fr-025), [FR-028](spec.md#fr-028)); confirm and discard call their endpoints and navigate back
-- [ ] T047 [US2] Implement `frontend/src/api/queries/import.ts` (profiles, batches, rows patch, confirm, discard; confirm invalidates `transactions` and `accounts`)
-- [ ] T048 [US2] Implement `frontend/src/features/import/ImportPage.tsx`, `UploadForm.tsx`, `ProfileForm.tsx`, `BatchList.tsx`; wire `/import`; T045 passes
-- [ ] T049 [US2] Implement `frontend/src/features/import/ReviewPage.tsx`, `VendorGroup.tsx`, `PendingRowControls.tsx`, `HiddenRowsDisclosure.tsx`; wire `/import/:batchId`; T046 passes
+- [x] T045 [P] [US2] Frontend tests `frontend/src/features/import/ProfileForm.test.tsx`
+- [x] T046 [P] [US2] Frontend tests `frontend/src/features/import/ReviewPage.test.tsx`
+- [x] T047 [US2] Implement `frontend/src/api/queries/import.ts`
+- [x] T048 [US2] Implement `frontend/src/features/import/ImportPage.tsx`, `UploadForm.tsx`, `ProfileForm.tsx`, `BatchList.tsx`; wire `/import`; T045 passes
+- [x] T049 [US2] Implement `frontend/src/features/import/ReviewPage.tsx`, `VendorGroup.tsx`, `PendingRowControls.tsx`, `HiddenRowsDisclosure.tsx`; wire `/import/:batchId`; T046 passes
 
 **Checkpoint**: Run [quickstart scenario 2](quickstart.md#validation-scenarios) with a real bank
 export. Commit.
