@@ -12,6 +12,11 @@ class SpaCsrfAuth(APIKeyCookie):
 api = NinjaAPI(auth=SpaCsrfAuth(), title="Financial Copilot")
 
 
+@api.get("/health")
+def health(request) -> dict[str, str]:
+    return {"status": "ok"}
+
+
 @api.post("/_csrf_probe")
 def csrf_probe(request) -> dict[str, bool]:
     return {"ok": True}
