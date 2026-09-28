@@ -154,7 +154,7 @@ Budget progress inside Insights is delivered by US4.
 ### Implementation for User Story 3
 
 - [x] T052 [US3] Implement `backend/domain/insights.py` until T050 passes
-- [ ] T053 [US3] Implement `backend/insights/queries.py` (ORM aggregation by `TruncDay`/`TruncMonth` and by category, transfers excluded, results handed to `domain.insights`), `backend/insights/schemas.py`, `backend/insights/api.py`; register in `backend/config/api.py`; T051 passes
+- [x] T053 [US3] Implement `backend/insights/queries.py` (ORM aggregation by `TruncDay`/`TruncMonth` and by category, transfers excluded, results handed to `domain.insights`), `backend/insights/schemas.py`, `backend/insights/api.py`; register in `backend/config/api.py`; T051 passes
 - [ ] T054 [US3] Regenerate `frontend/openapi.json` and `frontend/src/api/schema.d.ts`; add the shadcn `chart` component (`pnpm dlx shadcn@latest add chart`) into `frontend/src/components/ui/chart.tsx`
 - [ ] T055 [P] [US3] Frontend tests `frontend/src/lib/periods.test.ts`: `currentMonth()`, presets from [R-13](research.md#r-13-points-the-spec-leaves-open), `isWithinOneMonth(from, to)`
 - [ ] T056 [P] [US3] Frontend tests `frontend/src/features/insights/InsightsPage.test.tsx` (handlers in `frontend/src/test/handlers/insights.ts`): opens on the current month (US3 scenario 7); preset buttons and start/end inputs refetch with the new range; line and two donuts render from mocked data with category colours; Unaccounted slices carry a distinct visual marker (pattern class + legend label) ([FR-052](spec.md#fr-052)); empty data shows the empty state, not an error (scenario 6); charts expose no click handlers ([FR-053](spec.md#fr-053))

@@ -14,9 +14,11 @@ api = NinjaAPI(auth=SpaCsrfAuth(), title="Financial Copilot")
 
 from ledger.api import router as ledger_router  # noqa: E402
 from imports.api import router as imports_router  # noqa: E402
+from insights.api import router as insights_router  # noqa: E402
 
 api.add_router("", ledger_router)
 api.add_router("", imports_router)
+api.add_router("", insights_router)
 
 
 @api.get("/health")
