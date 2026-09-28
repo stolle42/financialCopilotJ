@@ -1,4 +1,5 @@
 import pytest
+from django.test import Client
 
 
 @pytest.mark.django_db
@@ -11,7 +12,8 @@ def test_openapi_json_is_served(client) -> None:
 
 
 @pytest.mark.django_db
-def test_ninja_post_without_csrf_token_is_rejected(client) -> None:
+def test_ninja_post_without_csrf_token_is_rejected() -> None:
+    client = Client(enforce_csrf_checks=True)
     response = client.post(
         "/api/_csrf_probe",
         data="{}",
