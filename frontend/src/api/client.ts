@@ -32,7 +32,7 @@ function resolveBaseUrl(): string {
 }
 
 /** MSW in Node only patches string-URL fetch; openapi-fetch calls fetch(Request). */
-async function apiFetch(
+export async function apiFetch(
   input: RequestInfo | URL,
   init?: RequestInit,
 ): Promise<Response> {
