@@ -4,3 +4,15 @@
 !.specify/memory/
 .specify/memory/*
 !.specify/memory/constitution.md
+
+# Backend (Python / Django / uv)
+backend/.venv/
+backend/db.sqlite3
+backend/**/__pycache__/
+backend/.pytest_cache/
+backend/.ruff_cache/
+
+# Frontend (Vite / pnpm)
+frontend/node_modules/
+frontend/dist/
+frontend/openapi.json
