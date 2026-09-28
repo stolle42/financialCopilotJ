@@ -149,7 +149,7 @@ Budget progress inside Insights is delivered by US4.
 ### Tests for User Story 3 (write first, confirm they fail)
 
 - [x] T050 [P] [US3] Domain tests `backend/tests/domain/test_insights.py`: `buckets` yields days for a period within one month and months otherwise ([R-13](research.md#r-13-points-the-spec-leaves-open)); `spending_over_time` sums expenses per bucket and ignores transfers ([FR-012](spec.md#fr-012)); `breakdown` returns amount and share per category including Uncategorised and Unaccounted at their true share ([FR-051](spec.md#fr-051), [FR-052](spec.md#fr-052)); empty input yields empty output
-- [ ] T051 [P] [US3] API test `backend/tests/api/test_insights.py` for [contracts → Insights](contracts/api.md#insights) without the `budgets` key: only transactions dated within `from`–`to` are counted; transfers excluded; a reconciliation shortfall appears as expense Unaccounted and a surplus as income Unaccounted; a period with no data returns empty arrays; omitted `from`/`to` default to the current calendar month ([FR-050](spec.md#fr-050)); 5,000 bulk-created transactions answer in under 2 s ([SC-009](spec.md#sc-009))
+- [x] T051 [P] [US3] API test `backend/tests/api/test_insights.py` for [contracts → Insights](contracts/api.md#insights) without the `budgets` key: only transactions dated within `from`–`to` are counted; transfers excluded; a reconciliation shortfall appears as expense Unaccounted and a surplus as income Unaccounted; a period with no data returns empty arrays; omitted `from`/`to` default to the current calendar month ([FR-050](spec.md#fr-050)); 5,000 bulk-created transactions answer in under 2 s ([SC-009](spec.md#sc-009))
 
 ### Implementation for User Story 3
 
