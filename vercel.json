@@ -2,5 +2,5 @@
   "env": {
     "PYTHONPATH": "backend"
   },
-      "buildCommand": "cd frontend && pnpm install && pnpm build"
+      "buildCommand": "cd frontend && npx -y pnpm@8.15.4 install --frozen-lockfile --prod=false && npx -y pnpm@8.15.4 run build"
 }
