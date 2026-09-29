@@ -1,5 +1,6 @@
 {
-    "env": {
-      "PYTHONPATH": "backend"
-    }
-  }
+  "env": {
+    "PYTHONPATH": "backend"
+  },
+      "buildCommand": "cd frontend && pnpm install && pnpm build"
+}
